@@ -23,6 +23,10 @@ on:
         required: true
         type: string
 
+      webhook_url:
+        required: true
+        type: string
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -47,6 +51,7 @@ jobs:
           TITLE: ${{ inputs.title }}
           EPISODE: ${{ inputs.episode }}
           CHANNEL: ${{ inputs.channel }}
+          WEBHOOK_URL: ${{ inputs.webhook_url }}
         run: |
           python - <<'PY'
           import json
@@ -57,7 +62,8 @@ jobs:
               "logo": os.environ["LOGO"],
               "title": os.environ["TITLE"],
               "episode": os.environ["EPISODE"],
-              "channel": os.environ["CHANNEL"]
+              "channel": os.environ["CHANNEL"],
+              "webhook_url": os.environ["WEBHOOK_URL"]
           }
 
           with open("input.json", "w", encoding="utf-8") as f:
@@ -117,7 +123,42 @@ jobs:
 
           result = response.json()
 
+          secure_url = result["secure_url"]
+
           print("Cloudinary upload successful")
           print("Image URL:")
-          print(result["secure_url"])
+          print(secure_url)
+
+          with open("cloudinary_url.txt", "w", encoding="utf-8") as f:
+              f.write(secure_url)
+          PY
+
+      - name: Send secure_url to n8n
+        env:
+          WEBHOOK_URL: ${{ inputs.webhook_url }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import requests
+
+          webhook_url = os.environ["WEBHOOK_URL"]
+
+          with open("cloudinary_url.txt", "r", encoding="utf-8") as f:
+              secure_url = f.read().strip()
+
+          response = requests.post(
+              webhook_url,
+              json={
+                  "secure_url": secure_url
+              },
+              timeout=30
+          )
+
+          response.raise_for_status()
+
+          print("secure_url sent to n8n successfully")
+          print(json.dumps({
+              "secure_url": secure_url
+          }, ensure_ascii=False))
           PY

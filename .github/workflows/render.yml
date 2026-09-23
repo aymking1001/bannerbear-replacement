@@ -68,8 +68,56 @@ jobs:
         run: |
           python renderer.py input.json
 
-      - name: Upload rendered image
-        uses: actions/upload-artifact@v4
-        with:
-          name: rendered-image
-          path: output/output.png
+      - name: Upload image to Cloudinary
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import os
+          import time
+          import requests
+
+          cloud_name = os.environ["CLOUDINARY_CLOUD_NAME"]
+          api_key = os.environ["CLOUDINARY_API_KEY"]
+          api_secret = os.environ["CLOUDINARY_API_SECRET"]
+
+          timestamp = int(time.time())
+
+          signature_string = (
+              f"timestamp={timestamp}{api_secret}"
+          )
+
+          signature = hashlib.sha1(
+              signature_string.encode("utf-8")
+          ).hexdigest()
+
+          url = (
+              f"https://api.cloudinary.com/v1_1/"
+              f"{cloud_name}/image/upload"
+          )
+
+          with open("output/output.png", "rb") as image_file:
+              response = requests.post(
+                  url,
+                  files={
+                      "file": image_file
+                  },
+                  data={
+                      "api_key": api_key,
+                      "timestamp": timestamp,
+                      "signature": signature
+                  },
+                  timeout=120
+              )
+
+          response.raise_for_status()
+
+          result = response.json()
+
+          print("Cloudinary upload successful")
+          print("Image URL:")
+          print(result["secure_url"])
+          PY

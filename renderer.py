@@ -198,7 +198,12 @@ def main():
     # 5. Episode
     # ---------------------------------------------------------
 
-    episode = str(data.get("episode", "20"))
+    episode = str(
+        data.get(
+            "episode",
+            "20",
+        )
+    )
 
     font = load_font(
         50,

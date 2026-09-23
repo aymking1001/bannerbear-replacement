@@ -2,6 +2,26 @@ name: Render Image
 
 on:
   workflow_dispatch:
+    inputs:
+      background:
+        required: true
+        type: string
+
+      logo:
+        required: true
+        type: string
+
+      title:
+        required: true
+        type: string
+
+      episode:
+        required: true
+        type: string
+
+      channel:
+        required: true
+        type: string
 
 jobs:
   render:
@@ -19,6 +39,30 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+
+      - name: Create input.json
+        env:
+          BACKGROUND: ${{ inputs.background }}
+          LOGO: ${{ inputs.logo }}
+          TITLE: ${{ inputs.title }}
+          EPISODE: ${{ inputs.episode }}
+          CHANNEL: ${{ inputs.channel }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+
+          data = {
+              "background": os.environ["BACKGROUND"],
+              "logo": os.environ["LOGO"],
+              "title": os.environ["TITLE"],
+              "episode": os.environ["EPISODE"],
+              "channel": os.environ["CHANNEL"]
+          }
+
+          with open("input.json", "w", encoding="utf-8") as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+          PY
 
       - name: Render image
         run: |

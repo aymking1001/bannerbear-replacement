@@ -90,7 +90,7 @@ jobs:
 
       - name: Render image
         run: |
-          python renderer.py input.json
+          python renderer1.py input.json
 
       - name: Upload image to Cloudinary
         env:

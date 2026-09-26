@@ -21,7 +21,6 @@ urllib.request.urlretrieve(url, path)
 def fit_background(image):
 image = image.convert("RGB")
 
-```
 scale = max(
     WIDTH / image.width,
     HEIGHT / image.height
@@ -41,7 +40,6 @@ top = (new_height - HEIGHT) // 2
 return image.crop(
     (left, top, left + WIDTH, top + HEIGHT)
 )
-```
 
 def draw_text_box(
 draw,
@@ -58,7 +56,6 @@ y = box["y"]
 width = box["width"]
 height = box["height"]
 
-```
 bbox = draw.multiline_textbbox(
     (0, 0),
     text,
@@ -92,7 +89,6 @@ draw.multiline_text(
     spacing=spacing,
     align=align
 )
-```
 
 def draw_auto_fit_text(
 draw,
@@ -111,7 +107,6 @@ Automatically reduces the font size until the text
 fits completely inside the specified box.
 """
 
-```
 x = box["x"]
 y = box["y"]
 width = box["width"]
@@ -183,11 +178,9 @@ draw.multiline_text(
     spacing=spacing,
     align=align
 )
-```
 
 def main():
 
-```
 if len(sys.argv) != 2:
     print("Usage: python renderer1.py input.json")
     sys.exit(1)
@@ -437,7 +430,6 @@ canvas.convert("RGB").save(
 print(
     f"Image created: {output_file}"
 )
-```
 
-if **name** == "**main**":
+if name == "main":
 main()

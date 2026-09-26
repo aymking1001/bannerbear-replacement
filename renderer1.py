@@ -1,3 +1,4 @@
+```python
 import json
 import sys
 from pathlib import Path
@@ -60,6 +61,96 @@ def draw_text_box(
     y = box["y"]
     width = box["width"]
     height = box["height"]
+
+    bbox = draw.multiline_textbbox(
+        (0, 0),
+        text,
+        font=font,
+        spacing=spacing,
+        align=align
+    )
+
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
+
+    if align == "center":
+        text_x = x + (width - text_width) / 2
+    elif align == "right":
+        text_x = x + width - text_width
+    else:
+        text_x = x
+
+    if vertical == "top":
+        text_y = y - bbox[1]
+    elif vertical == "bottom":
+        text_y = y + height - text_height - bbox[1]
+    else:
+        text_y = y + (height - text_height) / 2 - bbox[1]
+
+    draw.multiline_text(
+        (text_x, text_y),
+        text,
+        font=font,
+        fill=fill,
+        spacing=spacing,
+        align=align
+    )
+
+
+def draw_auto_fit_text(
+    draw,
+    text,
+    box,
+    max_font_size,
+    min_font_size,
+    bold=True,
+    fill="#000000",
+    align="center",
+    vertical="center",
+    spacing=4
+):
+    """
+    Automatically reduces the font size until the text
+    fits completely inside the specified box.
+    """
+
+    x = box["x"]
+    y = box["y"]
+    width = box["width"]
+    height = box["height"]
+
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+
+        font = load_font(
+            font_size,
+            bold=bold
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+            align=align
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold
+    )
 
     bbox = draw.multiline_textbbox(
         (0, 0),
@@ -214,6 +305,7 @@ def main():
 
     # --------------------------------------------------
     # Episode
+    # Dynamic input + Auto Fit
     # Template:
     # x=169 y=739
     # width=238 height=81
@@ -228,12 +320,7 @@ def main():
         )
     )
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -242,14 +329,17 @@ def main():
             "width": 238,
             "height": 81
         },
-        font,
-        "#000000",
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
     # --------------------------------------------------
     # Title
+    # Dynamic input + Auto Fit
     # Template:
     # x=67 y=169
     # width=845 height=418
@@ -264,12 +354,7 @@ def main():
         )
     )
 
-    font = load_font(
-        99,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -278,14 +363,17 @@ def main():
             "width": 845,
             "height": 418
         },
-        font,
-        "#000000",
-        "center",
-        "center"
+        max_font_size=99,
+        min_font_size=20,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
     # --------------------------------------------------
     # Channel
+    # Dynamic input + Auto Fit
     # Template:
     # x=367 y=932
     # width=670 height=83
@@ -300,12 +388,7 @@ def main():
         )
     )
 
-    font = load_font(
-        45,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -314,10 +397,12 @@ def main():
             "width": 670,
             "height": 83
         },
-        font,
-        "#000000",
-        "left",
-        "center"
+        max_font_size=45,
+        min_font_size=10,
+        bold=False,
+        fill="#000000",
+        align="left",
+        vertical="center"
     )
 
     # --------------------------------------------------
@@ -369,3 +454,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+```

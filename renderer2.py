@@ -46,24 +46,62 @@ def fit_background(image):
     )
 
 
-def draw_text_box(
+def draw_auto_fit_text(
     draw,
     text,
     box,
-    font,
-    fill,
-    align="left",
-    vertical="center"
+    max_font_size,
+    min_font_size,
+    bold=True,
+    fill="#000000",
+    align="center",
+    vertical="center",
+    spacing=4
 ):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    bbox = draw.textbbox(
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+
+        font = load_font(
+            font_size,
+            bold=bold
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+            align=align
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold
+    )
+
+    bbox = draw.multiline_textbbox(
         (0, 0),
         text,
-        font=font
+        font=font,
+        spacing=spacing,
+        align=align
     )
 
     text_width = bbox[2] - bbox[0]
@@ -82,7 +120,12 @@ def draw_text_box(
         text_y = y - bbox[1]
 
     elif vertical == "bottom":
-        text_y = y + height - text_height - bbox[1]
+        text_y = (
+            y
+            + height
+            - text_height
+            - bbox[1]
+        )
 
     else:
         text_y = (
@@ -91,11 +134,13 @@ def draw_text_box(
             - bbox[1]
         )
 
-    draw.text(
+    draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill
+        fill=fill,
+        spacing=spacing,
+        align=align
     )
 
 
@@ -163,14 +208,14 @@ def main():
 
     # -------------------------------------------------
     # المجلس - title Duplicate 5
+    # Template:
+    # x=1719 y=889
+    # width=175 height=150
+    # font-size=50
+    # center / center
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -179,14 +224,21 @@ def main():
             "width": 175,
             "height": 150
         },
-        font,
-        "#000000",
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Title
+    # Template:
+    # x=446 y=240
+    # width=1029 height=601
+    # font-size=152
+    # center / center
     # -------------------------------------------------
 
     title = str(
@@ -196,12 +248,7 @@ def main():
         )
     )
 
-    font = load_font(
-        152,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -210,14 +257,21 @@ def main():
             "width": 1029,
             "height": 601
         },
-        font,
-        "#000000",
-        "center",
-        "center"
+        max_font_size=152,
+        min_font_size=20,
+        bold=False,
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Episode
+    # Template:
+    # x=1566 y=929
+    # width=202 height=69
+    # font-size=65
+    # center / center
     # -------------------------------------------------
 
     episode = str(
@@ -227,12 +281,7 @@ def main():
         )
     )
 
-    font = load_font(
-        65,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -241,14 +290,21 @@ def main():
             "width": 202,
             "height": 69
         },
-        font,
-        "#000000",
-        "center",
-        "center"
+        max_font_size=65,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Channel
+    # Template:
+    # x=26 y=995
+    # width=577 height=47
+    # font-size=20
+    # left / center
     # -------------------------------------------------
 
     channel = str(
@@ -258,12 +314,7 @@ def main():
         )
     )
 
-    font = load_font(
-        20,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -272,22 +323,24 @@ def main():
             "width": 577,
             "height": 47
         },
-        font,
-        "#002030",
-        "left",
-        "center"
+        max_font_size=20,
+        min_font_size=8,
+        bold=True,
+        fill="#002030",
+        align="left",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Telegram
+    # Template:
+    # x=21 y=944
+    # width=361 height=39
+    # font-size=40
+    # left / top
     # -------------------------------------------------
 
-    font = load_font(
-        40,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "Telegram",
         {
@@ -296,22 +349,24 @@ def main():
             "width": 361,
             "height": 39
         },
-        font,
-        "#002030",
-        "left",
-        "top"
+        max_font_size=40,
+        min_font_size=10,
+        bold=True,
+        fill="#002030",
+        align="left",
+        vertical="top"
     )
 
     # -------------------------------------------------
     # الشيخ عبد الكريم الكثيري حفظه الله
+    # Template:
+    # x=768 y=914
+    # width=725 height=100
+    # font-size=50
+    # center / center
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
@@ -320,10 +375,12 @@ def main():
             "width": 725,
             "height": 100
         },
-        font,
-        "#000000",
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------

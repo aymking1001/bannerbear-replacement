@@ -46,24 +46,62 @@ def fit_background(image):
     )
 
 
-def draw_text_box(
+def draw_auto_fit_text(
     draw,
     text,
     box,
-    font,
-    fill,
-    align="left",
-    vertical="center"
+    max_font_size,
+    min_font_size,
+    bold=True,
+    fill="#000000",
+    align="center",
+    vertical="center",
+    spacing=4
 ):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    bbox = draw.textbbox(
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+
+        font = load_font(
+            font_size,
+            bold=bold
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+            align=align
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold
+    )
+
+    bbox = draw.multiline_textbbox(
         (0, 0),
         text,
-        font=font
+        font=font,
+        spacing=spacing,
+        align=align
     )
 
     text_width = bbox[2] - bbox[0]
@@ -91,11 +129,13 @@ def draw_text_box(
             - bbox[1]
         )
 
-    draw.text(
+    draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill
+        fill=fill,
+        spacing=spacing,
+        align=align
     )
 
 
@@ -165,6 +205,11 @@ def main():
 
     # -------------------------------------------------
     # Title
+    # Template:
+    # x=377 y=55
+    # width=1166 height=364
+    # font-size=50
+    # center / center
     # -------------------------------------------------
 
     title = str(
@@ -174,12 +219,7 @@ def main():
         )
     )
 
-    font = load_font(
-        50,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -188,22 +228,24 @@ def main():
             "width": 1166,
             "height": 364
         },
-        font,
-        TEXT_COLOR,
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=15,
+        bold=False,
+        fill=TEXT_COLOR,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Telegram
+    # Template:
+    # x=169 y=883
+    # width=150 height=40
+    # font-size=50
+    # left / center
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "Telegram",
         {
@@ -212,14 +254,21 @@ def main():
             "width": 150,
             "height": 40
         },
-        font,
-        TEXT_COLOR,
-        "left",
-        "center"
+        max_font_size=50,
+        min_font_size=10,
+        bold=False,
+        fill=TEXT_COLOR,
+        align="left",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Channel
+    # Template:
+    # x=169 y=990
+    # width=337 height=44
+    # font-size=50
+    # center / center
     # -------------------------------------------------
 
     channel = str(
@@ -229,12 +278,7 @@ def main():
         )
     )
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -243,14 +287,21 @@ def main():
             "width": 337,
             "height": 44
         },
-        font,
-        TEXT_COLOR,
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=10,
+        bold=True,
+        fill=TEXT_COLOR,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Episode
+    # Template:
+    # x=1543 y=992
+    # width=208 height=40
+    # font-size=50
+    # center / center
     # -------------------------------------------------
 
     episode = str(
@@ -260,12 +311,7 @@ def main():
         )
     )
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -274,22 +320,24 @@ def main():
             "width": 208,
             "height": 40
         },
-        font,
-        TEXT_COLOR,
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=10,
+        bold=True,
+        fill=TEXT_COLOR,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # المجلس
+    # Template:
+    # x=1543 y=863
+    # width=223 height=79
+    # font-size=50
+    # center / center
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -298,22 +346,24 @@ def main():
             "width": 223,
             "height": 79
         },
-        font,
-        TEXT_COLOR,
-        "center",
-        "center"
+        max_font_size=50,
+        min_font_size=10,
+        bold=False,
+        fill=TEXT_COLOR,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # الشيخ عبد الكريم الكثيري حفظه الله
+    # Template:
+    # x=677 y=922
+    # width=668 height=51
+    # font-size=50
+    # center / bottom
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
@@ -322,10 +372,12 @@ def main():
             "width": 668,
             "height": 51
         },
-        font,
-        "#000000",
-        "center",
-        "bottom"
+        max_font_size=50,
+        min_font_size=10,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="bottom"
     )
 
     # -------------------------------------------------

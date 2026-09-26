@@ -8,9 +8,6 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH = 1920
 HEIGHT = 1080
 
-
-# Temporary fonts.
-# We will replace these later with the exact fonts.
 FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
@@ -22,7 +19,6 @@ def load_font(size, bold=False):
 
 def download_image(url, path):
     import urllib.request
-
     urllib.request.urlretrieve(url, path)
 
 
@@ -31,7 +27,7 @@ def fit_background(image):
 
     scale = max(
         WIDTH / image.width,
-        HEIGHT / image.height,
+        HEIGHT / image.height
     )
 
     new_width = int(image.width * scale)
@@ -39,19 +35,14 @@ def fit_background(image):
 
     image = image.resize(
         (new_width, new_height),
-        Image.Resampling.LANCZOS,
+        Image.Resampling.LANCZOS
     )
 
     left = (new_width - WIDTH) // 2
     top = (new_height - HEIGHT) // 2
 
     return image.crop(
-        (
-            left,
-            top,
-            left + WIDTH,
-            top + HEIGHT,
-        )
+        (left, top, left + WIDTH, top + HEIGHT)
     )
 
 
@@ -62,6 +53,7 @@ def draw_text_box(
     font,
     fill,
     align="left",
+    vertical="center"
 ):
     x = box["x"]
     y = box["y"]
@@ -71,7 +63,7 @@ def draw_text_box(
     bbox = draw.textbbox(
         (0, 0),
         text,
-        font=font,
+        font=font
     )
 
     text_width = bbox[2] - bbox[0]
@@ -79,27 +71,47 @@ def draw_text_box(
 
     if align == "center":
         text_x = x + (width - text_width) / 2
+
+    elif align == "right":
+        text_x = x + width - text_width
+
     else:
         text_x = x
 
-    text_y = y + (height - text_height) / 2 - bbox[1]
+    if vertical == "top":
+        text_y = y - bbox[1]
+
+    elif vertical == "bottom":
+        text_y = y + height - text_height - bbox[1]
+
+    else:
+        text_y = (
+            y
+            + (height - text_height) / 2
+            - bbox[1]
+        )
 
     draw.text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill,
+        fill=fill
     )
 
 
 def main():
+
     if len(sys.argv) != 2:
         print("Usage: python renderer2.py input.json")
         sys.exit(1)
 
     input_file = Path(sys.argv[1])
 
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(
+        input_file,
+        "r",
+        encoding="utf-8"
+    ) as f:
         data = json.load(f)
 
     work_dir = Path("work")
@@ -111,39 +123,52 @@ def main():
     background_path = work_dir / "background"
     logo_path = work_dir / "logo"
 
-    # 1. Background
+    # -------------------------------------------------
+    # Background
+    # -------------------------------------------------
+
     download_image(
         data["background"],
-        background_path,
+        background_path
     )
 
     background = Image.open(background_path)
+
     canvas = fit_background(background)
 
-    # 2. Logo
+    # -------------------------------------------------
+    # Logo
+    # -------------------------------------------------
+
     download_image(
         data["logo"],
-        logo_path,
+        logo_path
     )
 
     logo = Image.open(logo_path).convert("RGBA")
 
     logo = logo.resize(
         (150, 150),
-        Image.Resampling.LANCZOS,
+        Image.Resampling.LANCZOS
     )
 
     canvas = canvas.convert("RGBA")
 
     canvas.alpha_composite(
         logo,
-        (19, 19),
+        (19, 19)
     )
 
     draw = ImageDraw.Draw(canvas)
 
-    # 3. Fixed title Duplicate 5
-    font = load_font(50, bold=True)
+    # -------------------------------------------------
+    # المجلس - title Duplicate 5
+    # -------------------------------------------------
+
+    font = load_font(
+        50,
+        bold=True
+    )
 
     draw_text_box(
         draw,
@@ -152,22 +177,29 @@ def main():
             "x": 1719,
             "y": 889,
             "width": 175,
-            "height": 150,
+            "height": 150
         },
         font,
         "#000000",
         "center",
+        "center"
     )
 
-    # 4. Title
+    # -------------------------------------------------
+    # Title
+    # -------------------------------------------------
+
     title = str(
         data.get(
             "title",
-            "التِّبيان لجَرْدِ الكُتبِ والمُطوَّلَات",
+            "التِّبيان لجَرْدِ الكُتبِ والمُطوَّلَات"
         )
     )
 
-    font = load_font(152, bold=False)
+    font = load_font(
+        152,
+        bold=False
+    )
 
     draw_text_box(
         draw,
@@ -176,22 +208,29 @@ def main():
             "x": 446,
             "y": 240,
             "width": 1029,
-            "height": 601,
+            "height": 601
         },
         font,
         "#000000",
         "center",
+        "center"
     )
 
-    # 5. Episode
+    # -------------------------------------------------
+    # Episode
+    # -------------------------------------------------
+
     episode = str(
         data.get(
             "episode",
-            "50",
+            "50"
         )
     )
 
-    font = load_font(65, bold=True)
+    font = load_font(
+        65,
+        bold=True
+    )
 
     draw_text_box(
         draw,
@@ -200,22 +239,29 @@ def main():
             "x": 1566,
             "y": 929,
             "width": 202,
-            "height": 69,
+            "height": 69
         },
         font,
         "#000000",
         "center",
+        "center"
     )
 
-    # 6. Channel
+    # -------------------------------------------------
+    # Channel
+    # -------------------------------------------------
+
     channel = str(
         data.get(
             "channel",
-            "https://t.me/qatufwdurar",
+            "https://t.me/qatufwdurar"
         )
     )
 
-    font = load_font(20, bold=True)
+    font = load_font(
+        20,
+        bold=True
+    )
 
     draw_text_box(
         draw,
@@ -224,15 +270,22 @@ def main():
             "x": 26,
             "y": 995,
             "width": 577,
-            "height": 47,
+            "height": 47
         },
         font,
         "#002030",
         "left",
+        "center"
     )
 
-    # 7. Fixed Telegram text
-    font = load_font(40, bold=True)
+    # -------------------------------------------------
+    # Telegram
+    # -------------------------------------------------
+
+    font = load_font(
+        40,
+        bold=True
+    )
 
     draw_text_box(
         draw,
@@ -241,22 +294,52 @@ def main():
             "x": 21,
             "y": 944,
             "width": 361,
-            "height": 39,
+            "height": 39
         },
         font,
         "#002030",
         "left",
+        "top"
     )
 
-    # 8. Save
+    # -------------------------------------------------
+    # الشيخ عبد الكريم الكثيري حفظه الله
+    # -------------------------------------------------
+
+    font = load_font(
+        50,
+        bold=True
+    )
+
+    draw_text_box(
+        draw,
+        "الشيخ عبد الكريم الكثيري حفظه الله",
+        {
+            "x": 768,
+            "y": 914,
+            "width": 725,
+            "height": 100
+        },
+        font,
+        "#000000",
+        "center",
+        "center"
+    )
+
+    # -------------------------------------------------
+    # Save
+    # -------------------------------------------------
+
     output_file = output_dir / "output.png"
 
     canvas.convert("RGB").save(
         output_file,
-        "PNG",
+        "PNG"
     )
 
-    print(f"Image created: {output_file}")
+    print(
+        f"Image created: {output_file}"
+    )
 
 
 if __name__ == "__main__":

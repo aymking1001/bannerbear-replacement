@@ -55,23 +55,61 @@ def fit_background(image):
     )
 
 
-def draw_text_box(
+def draw_auto_fit_text(
     draw,
     text,
     box,
-    font,
-    fill,
+    max_font_size,
+    min_font_size,
+    bold=False,
+    fill="#000000",
     align="left",
+    vertical="center",
+    spacing=4,
 ):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    bbox = draw.textbbox(
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+        font = load_font(
+            font_size,
+            bold=bold,
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+            align=align,
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold,
+    )
+
+    bbox = draw.multiline_textbbox(
         (0, 0),
         text,
         font=font,
+        spacing=spacing,
+        align=align,
     )
 
     text_width = bbox[2] - bbox[0]
@@ -79,16 +117,38 @@ def draw_text_box(
 
     if align == "center":
         text_x = x + (width - text_width) / 2
+
+    elif align == "right":
+        text_x = x + width - text_width
+
     else:
         text_x = x
 
-    text_y = y + (height - text_height) / 2 - bbox[1]
+    if vertical == "top":
+        text_y = y - bbox[1]
 
-    draw.text(
+    elif vertical == "bottom":
+        text_y = (
+            y
+            + height
+            - text_height
+            - bbox[1]
+        )
+
+    else:
+        text_y = (
+            y
+            + (height - text_height) / 2
+            - bbox[1]
+        )
+
+    draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
         fill=fill,
+        spacing=spacing,
+        align=align,
     )
 
 
@@ -99,7 +159,11 @@ def main():
 
     input_file = Path(sys.argv[1])
 
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(
+        input_file,
+        "r",
+        encoding="utf-8",
+    ) as f:
         data = json.load(f)
 
     work_dir = Path("work")
@@ -126,7 +190,9 @@ def main():
         logo_path,
     )
 
-    logo = Image.open(logo_path).convert("RGBA")
+    logo = Image.open(
+        logo_path
+    ).convert("RGBA")
 
     logo = logo.resize(
         (150, 150),
@@ -150,9 +216,7 @@ def main():
         )
     )
 
-    font = load_font(109, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -161,15 +225,16 @@ def main():
             "width": 1069,
             "height": 600,
         },
-        font,
-        "#000000",
-        "center",
+        max_font_size=109,
+        min_font_size=20,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center",
     )
 
     # 4. Fixed Telegram text
-    font = load_font(50, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "Telegram :",
         {
@@ -178,9 +243,12 @@ def main():
             "width": 192,
             "height": 86,
         },
-        font,
-        "#000000",
-        "left",
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="left",
+        vertical="center",
     )
 
     # 5. Episode
@@ -191,9 +259,7 @@ def main():
         )
     )
 
-    font = load_font(50, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -202,9 +268,12 @@ def main():
             "width": 208,
             "height": 84,
         },
-        font,
-        "#000000",
-        "center",
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center",
     )
 
     # 6. Channel
@@ -215,9 +284,7 @@ def main():
         )
     )
 
-    font = load_font(34, bold=False)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -226,15 +293,16 @@ def main():
             "width": 524,
             "height": 28,
         },
-        font,
-        "#000000",
-        "left",
+        max_font_size=34,
+        min_font_size=10,
+        bold=False,
+        fill="#000000",
+        align="left",
+        vertical="center",
     )
 
     # 7. Fixed المجلس text
-    font = load_font(50, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -243,15 +311,16 @@ def main():
             "width": 187,
             "height": 91,
         },
-        font,
-        "#000000",
-        "center",
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center",
     )
 
     # 8. Fixed speaker name
-    font = load_font(50, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
@@ -260,9 +329,12 @@ def main():
             "width": 916,
             "height": 51,
         },
-        font,
-        "#000000",
-        "center",
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center",
     )
 
     # 9. Save
@@ -273,7 +345,9 @@ def main():
         "PNG",
     )
 
-    print(f"Image created: {output_file}")
+    print(
+        f"Image created: {output_file}"
+    )
 
 
 if __name__ == "__main__":

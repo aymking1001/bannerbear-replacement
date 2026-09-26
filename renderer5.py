@@ -55,23 +55,61 @@ def fit_background(image):
     )
 
 
-def draw_text_box(
+def draw_auto_fit_text(
     draw,
     text,
     box,
-    font,
-    fill,
+    max_font_size,
+    min_font_size,
+    bold=False,
+    fill="#000000",
     align="left",
+    vertical="center",
+    spacing=4,
 ):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    bbox = draw.textbbox(
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+        font = load_font(
+            font_size,
+            bold=bold,
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+            align=align,
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold,
+    )
+
+    bbox = draw.multiline_textbbox(
         (0, 0),
         text,
         font=font,
+        spacing=spacing,
+        align=align,
     )
 
     text_width = bbox[2] - bbox[0]
@@ -79,16 +117,34 @@ def draw_text_box(
 
     if align == "center":
         text_x = x + (width - text_width) / 2
+    elif align == "right":
+        text_x = x + width - text_width
     else:
         text_x = x
 
-    text_y = y + (height - text_height) / 2 - bbox[1]
+    if vertical == "top":
+        text_y = y - bbox[1]
+    elif vertical == "bottom":
+        text_y = (
+            y
+            + height
+            - text_height
+            - bbox[1]
+        )
+    else:
+        text_y = (
+            y
+            + (height - text_height) / 2
+            - bbox[1]
+        )
 
-    draw.text(
+    draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
         fill=fill,
+        spacing=spacing,
+        align=align,
     )
 
 
@@ -99,7 +155,11 @@ def main():
 
     input_file = Path(sys.argv[1])
 
-    with open(input_file, "r", encoding="utf-8") as f:
+    with open(
+        input_file,
+        "r",
+        encoding="utf-8",
+    ) as f:
         data = json.load(f)
 
     work_dir = Path("work")
@@ -126,17 +186,22 @@ def main():
         logo_path,
     )
 
-    logo = Image.open(logo_path).convert("RGBA")
+    logo = Image.open(
+        logo_path
+    ).convert("RGBA")
 
     logo = logo.resize(
         (150, 150),
         Image.Resampling.LANCZOS,
     )
 
-    canvas = canvas.convert("RGBA")
-
     # Template 5 logo is circular
-    mask = Image.new("L", (150, 150), 0)
+    mask = Image.new(
+        "L",
+        (150, 150),
+        0,
+    )
+
     mask_draw = ImageDraw.Draw(mask)
 
     mask_draw.ellipse(
@@ -145,6 +210,8 @@ def main():
     )
 
     logo.putalpha(mask)
+
+    canvas = canvas.convert("RGBA")
 
     canvas.alpha_composite(
         logo,
@@ -157,9 +224,7 @@ def main():
     TEXT_COLOR = "#3c3d72"
 
     # 3. Fixed subtitle: المجلس
-    font = load_font(37, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -168,9 +233,12 @@ def main():
             "width": 219,
             "height": 206,
         },
-        font,
-        TEXT_COLOR,
-        "left",
+        max_font_size=37,
+        min_font_size=15,
+        bold=True,
+        fill=TEXT_COLOR,
+        align="left",
+        vertical="center",
     )
 
     # 4. Episode
@@ -181,9 +249,7 @@ def main():
         )
     )
 
-    font = load_font(50, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -192,9 +258,12 @@ def main():
             "width": 142,
             "height": 93,
         },
-        font,
-        TEXT_COLOR,
-        "center",
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill=TEXT_COLOR,
+        align="center",
+        vertical="center",
     )
 
     # 5. Title
@@ -205,9 +274,7 @@ def main():
         )
     )
 
-    font = load_font(48, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -216,15 +283,16 @@ def main():
             "width": 974,
             "height": 476,
         },
-        font,
-        TEXT_COLOR,
-        "center",
+        max_font_size=48,
+        min_font_size=15,
+        bold=True,
+        fill=TEXT_COLOR,
+        align="center",
+        vertical="center",
     )
 
     # 6. Fixed Telegram text
-    font = load_font(45, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "Telegram",
         {
@@ -233,9 +301,12 @@ def main():
             "width": 248,
             "height": 57,
         },
-        font,
-        TEXT_COLOR,
-        "left",
+        max_font_size=45,
+        min_font_size=15,
+        bold=True,
+        fill=TEXT_COLOR,
+        align="left",
+        vertical="center",
     )
 
     # 7. Channel
@@ -246,9 +317,7 @@ def main():
         )
     )
 
-    font = load_font(18, bold=False)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -257,15 +326,16 @@ def main():
             "width": 375,
             "height": 46,
         },
-        font,
-        TEXT_COLOR,
-        "left",
+        max_font_size=18,
+        min_font_size=8,
+        bold=False,
+        fill=TEXT_COLOR,
+        align="left",
+        vertical="center",
     )
 
     # 8. Fixed speaker name
-    font = load_font(50, bold=True)
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
@@ -274,9 +344,12 @@ def main():
             "width": 1152,
             "height": 63,
         },
-        font,
-        "#000000",
-        "center",
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="center",
     )
 
     # 9. Save
@@ -287,7 +360,9 @@ def main():
         "PNG",
     )
 
-    print(f"Image created: {output_file}")
+    print(
+        f"Image created: {output_file}"
+    )
 
 
 if __name__ == "__main__":

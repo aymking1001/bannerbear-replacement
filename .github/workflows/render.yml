@@ -39,6 +39,10 @@ on:
         required: true
         type: string
 
+      renderer:
+        required: true
+        type: string
+
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -67,6 +71,7 @@ jobs:
           CLOUDINARY_CLOUD_NAME: ${{ inputs.cloudinary_cloud_name }}
           CLOUDINARY_API_KEY: ${{ inputs.cloudinary_api_key }}
           CLOUDINARY_API_SECRET: ${{ inputs.cloudinary_api_secret }}
+          RENDERER: ${{ inputs.renderer }}
         run: |
           python - <<'PY'
           import json
@@ -81,7 +86,8 @@ jobs:
               "webhook_url": os.environ["WEBHOOK_URL"],
               "cloudinary_cloud_name": os.environ["CLOUDINARY_CLOUD_NAME"],
               "cloudinary_api_key": os.environ["CLOUDINARY_API_KEY"],
-              "cloudinary_api_secret": os.environ["CLOUDINARY_API_SECRET"]
+              "cloudinary_api_secret": os.environ["CLOUDINARY_API_SECRET"],
+              "renderer": os.environ["RENDERER"]
           }
 
           with open("input.json", "w", encoding="utf-8") as f:
@@ -89,8 +95,40 @@ jobs:
           PY
 
       - name: Render image
+        env:
+          RENDERER: ${{ inputs.renderer }}
         run: |
-          python renderer8.py input.json
+          case "$RENDERER" in
+            1)
+              python renderer1.py input.json
+              ;;
+            2)
+              python renderer2.py input.json
+              ;;
+            3)
+              python renderer3.py input.json
+              ;;
+            4)
+              python renderer4.py input.json
+              ;;
+            5)
+              python renderer5.py input.json
+              ;;
+            6)
+              python renderer6.py input.json
+              ;;
+            7)
+              python renderer7.py input.json
+              ;;
+            8)
+              python renderer8.py input.json
+              ;;
+            *)
+              echo "Invalid renderer: $RENDERER"
+              echo "Allowed values: 1, 2, 3, 4, 5, 6, 7, 8"
+              exit 1
+              ;;
+          esac
 
       - name: Upload image to Cloudinary
         env:

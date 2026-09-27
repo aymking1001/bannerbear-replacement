@@ -46,24 +46,61 @@ def fit_background(image):
     )
 
 
-def draw_text_box(
+def draw_auto_fit_text(
     draw,
     text,
     box,
-    font,
-    fill,
+    max_font_size,
+    min_font_size,
+    bold=False,
+    fill="#000000",
     align="left",
-    vertical="center"
+    vertical="center",
+    spacing=4
 ):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    bbox = draw.textbbox(
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+        font = load_font(
+            font_size,
+            bold=bold
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            spacing=spacing,
+            align=align
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold
+    )
+
+    bbox = draw.multiline_textbbox(
         (0, 0),
         text,
-        font=font
+        font=font,
+        spacing=spacing,
+        align=align
     )
 
     text_width = bbox[2] - bbox[0]
@@ -81,6 +118,14 @@ def draw_text_box(
     if vertical == "top":
         text_y = y - bbox[1]
 
+    elif vertical == "bottom":
+        text_y = (
+            y
+            + height
+            - text_height
+            - bbox[1]
+        )
+
     else:
         text_y = (
             y
@@ -88,11 +133,13 @@ def draw_text_box(
             - bbox[1]
         )
 
-    draw.text(
+    draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill
+        fill=fill,
+        spacing=spacing,
+        align=align
     )
 
 
@@ -152,16 +199,8 @@ def main():
 
     draw = ImageDraw.Draw(canvas)
 
-    # -------------------------------------------------
     # Telegram :
-    # -------------------------------------------------
-
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "Telegram :",
         {
@@ -170,16 +209,15 @@ def main():
             "width": 211,
             "height": 77
         },
-        font,
-        "#000000",
-        "left",
-        "center"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="left",
+        vertical="center"
     )
 
-    # -------------------------------------------------
     # Channel
-    # -------------------------------------------------
-
     channel = str(
         data.get(
             "channel",
@@ -187,12 +225,7 @@ def main():
         )
     )
 
-    font = load_font(
-        40,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -201,22 +234,16 @@ def main():
             "width": 516,
             "height": 45
         },
-        font,
-        "#000000",
-        "left",
-        "top"
+        max_font_size=40,
+        min_font_size=10,
+        bold=True,
+        fill="#000000",
+        align="left",
+        vertical="top"
     )
 
-    # -------------------------------------------------
     # المجلس
-    # -------------------------------------------------
-
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -225,16 +252,15 @@ def main():
             "width": 170,
             "height": 50
         },
-        font,
-        "#303030",
-        "right",
-        "top"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#303030",
+        align="right",
+        vertical="top"
     )
 
-    # -------------------------------------------------
     # Episode
-    # -------------------------------------------------
-
     episode = str(
         data.get(
             "episode",
@@ -242,12 +268,7 @@ def main():
         )
     )
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -256,16 +277,15 @@ def main():
             "width": 114,
             "height": 61
         },
-        font,
-        "#262626",
-        "right",
-        "center"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#262626",
+        align="right",
+        vertical="center"
     )
 
-    # -------------------------------------------------
     # Title
-    # -------------------------------------------------
-
     title = str(
         data.get(
             "title",
@@ -273,12 +293,7 @@ def main():
         )
     )
 
-    font = load_font(
-        60,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -287,22 +302,16 @@ def main():
             "width": 1073,
             "height": 503
         },
-        font,
-        "#282828",
-        "center",
-        "center"
+        max_font_size=60,
+        min_font_size=15,
+        bold=True,
+        fill="#282828",
+        align="center",
+        vertical="center"
     )
 
-    # -------------------------------------------------
     # الشيخ عبد الكريم الكثيري حفظه الله
-    # -------------------------------------------------
-
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
@@ -311,16 +320,15 @@ def main():
             "width": 776,
             "height": 71
         },
-        font,
-        "#000000",
-        "center",
-        "top"
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#000000",
+        align="center",
+        vertical="top"
     )
 
-    # -------------------------------------------------
     # Save
-    # -------------------------------------------------
-
     output_file = output_dir / "output.png"
 
     canvas.convert("RGB").save(

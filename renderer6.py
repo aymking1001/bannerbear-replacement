@@ -317,10 +317,10 @@ def main():
         {
             "x": 779,
             "y": 965,
-            "width": 700,
+            "width": 776,
             "height": 71
         },
-        max_font_size=50,
+        max_font_size=40,
         min_font_size=15,
         bold=True,
         fill="#000000",

@@ -46,24 +46,62 @@ def fit_background(image):
     )
 
 
-def draw_text_box(
+def draw_auto_fit_text(
     draw,
     text,
     box,
-    font,
+    max_font_size,
     fill,
+    bold=False,
     align="left",
-    vertical="center"
+    vertical="center",
+    min_font_size=1
 ):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    bbox = draw.textbbox(
+    text = str(text)
+
+    font_size = max_font_size
+
+    while font_size >= min_font_size:
+        font = load_font(
+            font_size,
+            bold=bold
+        )
+
+        bbox = draw.multiline_textbbox(
+            (0, 0),
+            text,
+            font=font,
+            align=align,
+            spacing=0
+        )
+
+        text_width = bbox[2] - bbox[0]
+        text_height = bbox[3] - bbox[1]
+
+        if (
+            text_width <= width
+            and text_height <= height
+        ):
+            break
+
+        font_size -= 1
+
+    font = load_font(
+        max(font_size, min_font_size),
+        bold=bold
+    )
+
+    bbox = draw.multiline_textbbox(
         (0, 0),
         text,
-        font=font
+        font=font,
+        align=align,
+        spacing=0
     )
 
     text_width = bbox[2] - bbox[0]
@@ -81,6 +119,9 @@ def draw_text_box(
     if vertical == "top":
         text_y = y - bbox[1]
 
+    elif vertical == "bottom":
+        text_y = y + height - text_height - bbox[1]
+
     else:
         text_y = (
             y
@@ -88,11 +129,13 @@ def draw_text_box(
             - bbox[1]
         )
 
-    draw.text(
+    draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill
+        fill=fill,
+        align=align,
+        spacing=0
     )
 
 
@@ -162,12 +205,7 @@ def main():
     # المجلس - text_container_5
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -176,10 +214,11 @@ def main():
             "width": 141,
             "height": 154
         },
-        font,
+        50,
         "#A5B33D",
-        "center",
-        "center"
+        bold=True,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
@@ -193,12 +232,7 @@ def main():
         )
     )
 
-    font = load_font(
-        100,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         title,
         {
@@ -207,22 +241,18 @@ def main():
             "width": 1260,
             "height": 325
         },
-        font,
+        100,
         "#000000",
-        "center",
-        "center"
+        bold=True,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # Telegram:
     # -------------------------------------------------
 
-    font = load_font(
-        30,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "Telegram: ",
         {
@@ -231,10 +261,11 @@ def main():
             "width": 1152,
             "height": 40
         },
-        font,
+        30,
         "#000000",
-        "left",
-        "center"
+        bold=False,
+        align="left",
+        vertical="center"
     )
 
     # -------------------------------------------------
@@ -248,12 +279,7 @@ def main():
         )
     )
 
-    font = load_font(
-        30,
-        bold=False
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         channel,
         {
@@ -262,22 +288,18 @@ def main():
             "width": 1152,
             "height": 40
         },
-        font,
+        30,
         "#000000",
-        "left",
-        "center"
+        bold=False,
+        align="left",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # المجلس - text_container_9
     # -------------------------------------------------
 
-    font = load_font(
-        86,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "المجلس",
         {
@@ -286,10 +308,11 @@ def main():
             "width": 284,
             "height": 169
         },
-        font,
+        86,
         "#000000",
-        "center",
-        "center"
+        bold=True,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
@@ -303,12 +326,7 @@ def main():
         )
     )
 
-    font = load_font(
-        88,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         episode,
         {
@@ -317,22 +335,18 @@ def main():
             "width": 150,
             "height": 175
         },
-        font,
+        88,
         "#000000",
-        "center",
-        "center"
+        bold=True,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------
     # الشيخ عبد الكريم الكثيري حفظه الله
     # -------------------------------------------------
 
-    font = load_font(
-        50,
-        bold=True
-    )
-
-    draw_text_box(
+    draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
@@ -341,10 +355,11 @@ def main():
             "width": 595,
             "height": 51
         },
-        font,
+        50,
         "#000000",
-        "center",
-        "center"
+        bold=True,
+        align="center",
+        vertical="center"
     )
 
     # -------------------------------------------------

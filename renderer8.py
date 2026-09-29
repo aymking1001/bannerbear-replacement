@@ -8,6 +8,9 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH = 1920
 HEIGHT = 1080
 
+WHITE_BOX_ALPHA = 110
+BOX_CORNER_RADIUS = 25
+
 FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
@@ -44,6 +47,34 @@ def fit_background(image):
     return image.crop(
         (left, top, left + WIDTH, top + HEIGHT)
     )
+
+
+def draw_transparent_box(canvas, box):
+    overlay = Image.new(
+        "RGBA",
+        canvas.size,
+        (0, 0, 0, 0)
+    )
+
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    x = box["x"]
+    y = box["y"]
+    width = box["width"]
+    height = box["height"]
+
+    overlay_draw.rounded_rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        radius=BOX_CORNER_RADIUS,
+        fill=(255, 255, 255, WHITE_BOX_ALPHA)
+    )
+
+    canvas.alpha_composite(overlay)
 
 
 def draw_auto_fit_text(
@@ -212,15 +243,24 @@ def main():
         )
     )
 
+    title_box = {
+        "x": 25,
+        "y": 169,
+        "width": 1260,
+        "height": 325
+    }
+
+    draw_transparent_box(
+        canvas,
+        title_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         title,
-        {
-            "x": 25,
-            "y": 169,
-            "width": 1260,
-            "height": 325
-        },
+        title_box,
         100,
         "#000000",
         bold=True,
@@ -229,22 +269,31 @@ def main():
     )
 
     # -------------------------------------------------
-    # Telegram:
+    # Telegram
     # -------------------------------------------------
+
+    telegram_box = {
+        "x": 42,
+        "y": 992,
+        "width": 1152,
+        "height": 40
+    }
+
+    draw_transparent_box(
+        canvas,
+        telegram_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
 
     draw_auto_fit_text(
         draw,
         "Telegram: ",
-        {
-            "x": 42,
-            "y": 992,
-            "width": 1152,
-            "height": 40
-        },
+        telegram_box,
         30,
         "#000000",
         bold=False,
-        align="left",
+        align="center",
         vertical="center"
     )
 
@@ -259,35 +308,53 @@ def main():
         )
     )
 
+    channel_box = {
+        "x": 285,
+        "y": 995,
+        "width": 1152,
+        "height": 40
+    }
+
+    draw_transparent_box(
+        canvas,
+        channel_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         channel,
-        {
-            "x": 285,
-            "y": 995,
-            "width": 1152,
-            "height": 40
-        },
+        channel_box,
         30,
         "#000000",
         bold=False,
-        align="left",
+        align="center",
         vertical="center"
     )
 
     # -------------------------------------------------
-    # المجلس - text_container_9
+    # المجلس
     # -------------------------------------------------
+
+    council_box = {
+        "x": 81,
+        "y": 494,
+        "width": 284,
+        "height": 169
+    }
+
+    draw_transparent_box(
+        canvas,
+        council_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
 
     draw_auto_fit_text(
         draw,
         "المجلس",
-        {
-            "x": 81,
-            "y": 494,
-            "width": 284,
-            "height": 169
-        },
+        council_box,
         86,
         "#000000",
         bold=True,
@@ -306,15 +373,24 @@ def main():
         )
     )
 
+    episode_box = {
+        "x": 135,
+        "y": 663,
+        "width": 150,
+        "height": 175
+    }
+
+    draw_transparent_box(
+        canvas,
+        episode_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         episode,
-        {
-            "x": 135,
-            "y": 663,
-            "width": 150,
-            "height": 175
-        },
+        episode_box,
         88,
         "#000000",
         bold=True,
@@ -326,15 +402,24 @@ def main():
     # الشيخ عبد الكريم الكثيري حفظه الله
     # -------------------------------------------------
 
+    speaker_box = {
+        "x": 358,
+        "y": 663,
+        "width": 595,
+        "height": 51
+    }
+
+    draw_transparent_box(
+        canvas,
+        speaker_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
-        {
-            "x": 358,
-            "y": 663,
-            "width": 595,
-            "height": 51
-        },
+        speaker_box,
         50,
         "#000000",
         bold=True,

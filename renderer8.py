@@ -269,27 +269,33 @@ def main():
     )
 
     # -------------------------------------------------
-    # Telegram
+    # Telegram + Channel - نفس المربع
     # -------------------------------------------------
 
-    telegram_box = {
+    telegram_channel_box = {
         "x": 42,
         "y": 992,
-        "width": 1152,
-        "height": 40
+        "width": 1395,
+        "height": 55
     }
 
     draw_transparent_box(
         canvas,
-        telegram_box
+        telegram_channel_box
     )
 
     draw = ImageDraw.Draw(canvas)
 
+    # Telegram
     draw_auto_fit_text(
         draw,
         "Telegram: ",
-        telegram_box,
+        {
+            "x": 42,
+            "y": 992,
+            "width": 243,
+            "height": 55
+        },
         30,
         "#000000",
         bold=False,
@@ -297,10 +303,7 @@ def main():
         vertical="center"
     )
 
-    # -------------------------------------------------
     # Channel
-    # -------------------------------------------------
-
     channel = str(
         data.get(
             "channel",
@@ -308,24 +311,15 @@ def main():
         )
     )
 
-    channel_box = {
-        "x": 285,
-        "y": 995,
-        "width": 1152,
-        "height": 40
-    }
-
-    draw_transparent_box(
-        canvas,
-        channel_box
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
     draw_auto_fit_text(
         draw,
         channel,
-        channel_box,
+        {
+            "x": 285,
+            "y": 992,
+            "width": 1152,
+            "height": 55
+        },
         30,
         "#000000",
         bold=False,

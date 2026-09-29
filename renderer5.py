@@ -255,7 +255,7 @@ def main():
     # 3. Fixed subtitle: المجلس
     council_box = {
         "x": 1657,
-        "y": 761,
+        "y": 910,
         "width": 219,
         "height": 206,
     }

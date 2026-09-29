@@ -235,9 +235,9 @@ def main():
 
     bottom_box = {
         "x": 33,
-        "y": 910,
+        "y": 960,
         "width": 1795,
-        "height": 150
+        "height": 90
     }
 
     draw_transparent_box(
@@ -253,7 +253,7 @@ def main():
         "Telegram :",
         {
             "x": 52,
-            "y": 925,
+            "y": 970,
             "width": 211,
             "height": 55
         },
@@ -278,7 +278,7 @@ def main():
         channel,
         {
             "x": 263,
-            "y": 925,
+            "y": 970,
             "width": 516,
             "height": 55
         },
@@ -296,7 +296,7 @@ def main():
         "الشيخ عبد الكريم الكثيري حفظه الله",
         {
             "x": 779,
-            "y": 925,
+            "y": 970,
             "width": 776,
             "height": 55
         },
@@ -321,7 +321,7 @@ def main():
         episode,
         {
             "x": 1544,
-            "y": 925,
+            "y": 970,
             "width": 114,
             "height": 55
         },
@@ -339,7 +339,7 @@ def main():
         "المجلس",
         {
             "x": 1658,
-            "y": 925,
+            "y": 970,
             "width": 170,
             "height": 55
         },

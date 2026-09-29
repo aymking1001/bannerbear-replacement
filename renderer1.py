@@ -426,7 +426,7 @@ def main():
     )
 
     channel_box = {
-        "x": 367,
+        "x": 380,
         "y": 932,
         "width": 670,
         "height": 83

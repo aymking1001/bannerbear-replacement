@@ -11,6 +11,8 @@ HEIGHT = 1080
 FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
+WHITE_BOX_ALPHA = 128
+
 
 def load_font(size, bold=False):
     font_path = FONT_BOLD if bold else FONT_REGULAR
@@ -43,6 +45,23 @@ def fit_background(image):
 
     return image.crop(
         (left, top, left + WIDTH, top + HEIGHT)
+    )
+
+
+def draw_transparent_box(draw, box):
+    x = box["x"]
+    y = box["y"]
+    width = box["width"]
+    height = box["height"]
+
+    draw.rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        fill=(255, 255, 255, WHITE_BOX_ALPHA)
     )
 
 
@@ -242,21 +261,31 @@ def main():
         (19, 19)
     )
 
-    draw = ImageDraw.Draw(canvas)
+    draw = ImageDraw.Draw(
+        canvas,
+        "RGBA"
+    )
 
     # --------------------------------------------------
     # المجلس
     # --------------------------------------------------
 
+    council_box = {
+        "x": 473,
+        "y": 665,
+        "width": 439,
+        "height": 230
+    }
+
+    draw_transparent_box(
+        draw,
+        council_box
+    )
+
     draw_auto_fit_text(
         draw,
         "المجلس",
-        {
-            "x": 473,
-            "y": 665,
-            "width": 439,
-            "height": 230
-        },
+        council_box,
         max_font_size=149,
         min_font_size=20,
         bold=True,
@@ -269,15 +298,22 @@ def main():
     # Telegram :
     # --------------------------------------------------
 
+    telegram_box = {
+        "x": 36,
+        "y": 895,
+        "width": 331,
+        "height": 159
+    }
+
+    draw_transparent_box(
+        draw,
+        telegram_box
+    )
+
     draw_auto_fit_text(
         draw,
         "Telegram :",
-        {
-            "x": 36,
-            "y": 895,
-            "width": 331,
-            "height": 159
-        },
+        telegram_box,
         max_font_size=88,
         min_font_size=15,
         bold=True,
@@ -297,15 +333,22 @@ def main():
         )
     )
 
+    episode_box = {
+        "x": 169,
+        "y": 739,
+        "width": 238,
+        "height": 81
+    }
+
+    draw_transparent_box(
+        draw,
+        episode_box
+    )
+
     draw_auto_fit_text(
         draw,
         episode,
-        {
-            "x": 169,
-            "y": 739,
-            "width": 238,
-            "height": 81
-        },
+        episode_box,
         max_font_size=50,
         min_font_size=15,
         bold=True,
@@ -325,15 +368,22 @@ def main():
         )
     )
 
+    title_box = {
+        "x": 67,
+        "y": 169,
+        "width": 845,
+        "height": 418
+    }
+
+    draw_transparent_box(
+        draw,
+        title_box
+    )
+
     draw_auto_fit_text(
         draw,
         title,
-        {
-            "x": 67,
-            "y": 169,
-            "width": 845,
-            "height": 418
-        },
+        title_box,
         max_font_size=99,
         min_font_size=20,
         bold=True,
@@ -353,15 +403,22 @@ def main():
         )
     )
 
+    channel_box = {
+        "x": 367,
+        "y": 932,
+        "width": 670,
+        "height": 83
+    }
+
+    draw_transparent_box(
+        draw,
+        channel_box
+    )
+
     draw_auto_fit_text(
         draw,
         channel,
-        {
-            "x": 367,
-            "y": 932,
-            "width": 670,
-            "height": 83
-        },
+        channel_box,
         max_font_size=45,
         min_font_size=10,
         bold=False,
@@ -374,15 +431,22 @@ def main():
     # Sheikh name
     # --------------------------------------------------
 
+    sheikh_box = {
+        "x": 1530,
+        "y": 924,
+        "width": 354,
+        "height": 100
+    }
+
+    draw_transparent_box(
+        draw,
+        sheikh_box
+    )
+
     draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم\nالكثيري حفظه الله",
-        {
-            "x": 1530,
-            "y": 924,
-            "width": 354,
-            "height": 100
-        },
+        sheikh_box,
         max_font_size=50,
         min_font_size=15,
         bold=True,

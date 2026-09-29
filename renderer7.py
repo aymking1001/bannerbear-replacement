@@ -216,10 +216,11 @@ def main():
 
     canvas = canvas.convert("RGBA")
 
-    canvas.alpha_composite(
-        logo,
-        (19, 19)
-    )
+    if data.get("include_logo", True):
+        canvas.alpha_composite(
+            logo,
+            (19, 19),
+        )
 
     draw = ImageDraw.Draw(canvas)
 

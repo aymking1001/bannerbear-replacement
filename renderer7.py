@@ -8,6 +8,9 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH = 1920
 HEIGHT = 1080
 
+WHITE_BOX_ALPHA = 110
+BOX_CORNER_RADIUS = 25
+
 FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
@@ -44,6 +47,34 @@ def fit_background(image):
     return image.crop(
         (left, top, left + WIDTH, top + HEIGHT)
     )
+
+
+def draw_transparent_box(canvas, box):
+    overlay = Image.new(
+        "RGBA",
+        canvas.size,
+        (0, 0, 0, 0)
+    )
+
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    x = box["x"]
+    y = box["y"]
+    width = box["width"]
+    height = box["height"]
+
+    overlay_draw.rounded_rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        radius=BOX_CORNER_RADIUS,
+        fill=(255, 255, 255, WHITE_BOX_ALPHA)
+    )
+
+    canvas.alpha_composite(overlay)
 
 
 def draw_auto_fit_text(
@@ -199,10 +230,6 @@ def main():
         (19, 19)
     )
 
-    draw = ImageDraw.Draw(canvas)
-
-    TEXT_COLOR = "#270D30"
-
     # -------------------------------------------------
     # Title
     # -------------------------------------------------
@@ -214,15 +241,26 @@ def main():
         )
     )
 
+    title_box = {
+        "x": 592,
+        "y": 419,
+        "width": 736,
+        "height": 418
+    }
+
+    draw_transparent_box(
+        canvas,
+        title_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
+    TEXT_COLOR = "#270D30"
+
     draw_auto_fit_text(
         draw,
         title,
-        {
-            "x": 592,
-            "y": 419,
-            "width": 736,
-            "height": 418
-        },
+        title_box,
         50,
         TEXT_COLOR,
         bold=False,
@@ -267,15 +305,24 @@ def main():
     # Subtitle
     # -------------------------------------------------
 
+    subtitle_box = {
+        "x": 1522,
+        "y": 587,
+        "width": 280,
+        "height": 83
+    }
+
+    draw_transparent_box(
+        canvas,
+        subtitle_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         "المجلس",
-        {
-            "x": 1522,
-            "y": 587,
-            "width": 280,
-            "height": 83
-        },
+        subtitle_box,
         7,
         TEXT_COLOR,
         bold=False,
@@ -294,15 +341,24 @@ def main():
         )
     )
 
+    channel_box = {
+        "x": 556,
+        "y": 975,
+        "width": 809,
+        "height": 63
+    }
+
+    draw_transparent_box(
+        canvas,
+        channel_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         channel,
-        {
-            "x": 556,
-            "y": 975,
-            "width": 809,
-            "height": 63
-        },
+        channel_box,
         40,
         TEXT_COLOR,
         bold=False,
@@ -321,15 +377,24 @@ def main():
         )
     )
 
+    episode_box = {
+        "x": 58,
+        "y": 581,
+        "width": 245,
+        "height": 96
+    }
+
+    draw_transparent_box(
+        canvas,
+        episode_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         episode,
-        {
-            "x": 58,
-            "y": 581,
-            "width": 245,
-            "height": 96
-        },
+        episode_box,
         60,
         TEXT_COLOR,
         bold=False,
@@ -341,15 +406,24 @@ def main():
     # الشيخ عبد الكريم الكثيري حفظه الله
     # -------------------------------------------------
 
+    speaker_box = {
+        "x": 1540,
+        "y": 38,
+        "width": 368,
+        "height": 132
+    }
+
+    draw_transparent_box(
+        canvas,
+        speaker_box
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم\nالكثيري حفظه الله",
-        {
-            "x": 1540,
-            "y": 38,
-            "width": 368,
-            "height": 132
-        },
+        speaker_box,
         50,
         "#000000",
         bold=True,

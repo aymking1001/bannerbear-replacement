@@ -251,6 +251,23 @@ def main():
     )
 
     # -------------------------------------------------
+    # المجلس + رقم المجلس
+    # مربع واحد خلف العنصرين معًا
+    # -------------------------------------------------
+
+    council_episode_box = {
+        "x": 1566,
+        "y": 889,
+        "width": 328,
+        "height": 150
+    }
+
+    draw_transparent_box(
+        canvas,
+        council_episode_box
+    )
+
+    # -------------------------------------------------
     # المجلس - title Duplicate 5
     # Template:
     # x=1719 y=889
@@ -259,22 +276,15 @@ def main():
     # center / center
     # -------------------------------------------------
 
-    council_box = {
-        "x": 1719,
-        "y": 889,
-        "width": 175,
-        "height": 150
-    }
-
-    draw_transparent_box(
-        canvas,
-        council_box
-    )
-
     draw_auto_fit_text(
         draw,
         "المجلس",
-        council_box,
+        {
+            "x": 1719,
+            "y": 889,
+            "width": 175,
+            "height": 150
+        },
         max_font_size=50,
         min_font_size=15,
         bold=True,
@@ -324,7 +334,7 @@ def main():
     )
 
     # -------------------------------------------------
-    # Episode
+    # Episode / رقم المجلس
     # Template:
     # x=1566 y=929
     # width=202 height=69
@@ -345,11 +355,6 @@ def main():
         "width": 202,
         "height": 69
     }
-
-    draw_transparent_box(
-        canvas,
-        episode_box
-    )
 
     draw_auto_fit_text(
         draw,
@@ -426,7 +431,7 @@ def main():
 
     draw_auto_fit_text(
         draw,
-        "   Telegram",
+        "Telegram",
         telegram_box,
         max_font_size=40,
         min_font_size=10,

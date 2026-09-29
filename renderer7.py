@@ -138,34 +138,25 @@ def draw_auto_fit_text(
     text_width = bbox[2] - bbox[0]
     text_height = bbox[3] - bbox[1]
 
-    if align == "center":
-        text_x = x + (width - text_width) / 2
+    # Center horizontally
+    text_x = (
+        x
+        + (width - text_width) / 2
+    )
 
-    elif align == "right":
-        text_x = x + width - text_width
-
-    else:
-        text_x = x
-
-    if vertical == "top":
-        text_y = y - bbox[1]
-
-    elif vertical == "bottom":
-        text_y = y + height - text_height - bbox[1]
-
-    else:
-        text_y = (
-            y
-            + (height - text_height) / 2
-            - bbox[1]
-        )
+    # Center vertically
+    text_y = (
+        y
+        + (height - text_height) / 2
+        - bbox[1]
+    )
 
     draw.multiline_text(
         (text_x, text_y),
         text,
         font=font,
         fill=fill,
-        align=align,
+        align="center",
         spacing=0
     )
 
@@ -266,8 +257,7 @@ def main():
         50,
         TEXT_COLOR,
         bold=False,
-        align="center",
-        vertical="center"
+        min_font_size=1
     )
 
     # -------------------------------------------------
@@ -294,9 +284,7 @@ def main():
         cta_box,
         50,
         TEXT_COLOR,
-        bold=False,
-        align="center",
-        vertical="center"
+        bold=False
     )
 
     # -------------------------------------------------
@@ -324,8 +312,6 @@ def main():
         50,
         TEXT_COLOR,
         bold=False,
-        align="right",
-        vertical="center",
         min_font_size=10
     )
 
@@ -360,9 +346,7 @@ def main():
         channel_box,
         40,
         TEXT_COLOR,
-        bold=False,
-        align="center",
-        vertical="top"
+        bold=False
     )
 
     # -------------------------------------------------
@@ -396,9 +380,7 @@ def main():
         episode_box,
         60,
         TEXT_COLOR,
-        bold=False,
-        align="right",
-        vertical="center"
+        bold=False
     )
 
     # -------------------------------------------------
@@ -425,9 +407,7 @@ def main():
         speaker_box,
         50,
         "#000000",
-        bold=True,
-        align="center",
-        vertical="center"
+        bold=True
     )
 
     # -------------------------------------------------

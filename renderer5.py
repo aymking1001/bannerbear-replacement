@@ -8,6 +8,9 @@ from PIL import Image, ImageDraw, ImageFont
 WIDTH = 1920
 HEIGHT = 1080
 
+WHITE_BOX_ALPHA = 110
+BOX_CORNER_RADIUS = 25
+
 
 # Temporary fonts.
 # We will replace these later with the exact fonts.
@@ -53,6 +56,34 @@ def fit_background(image):
             top + HEIGHT,
         )
     )
+
+
+def draw_transparent_box(canvas, box):
+    overlay = Image.new(
+        "RGBA",
+        canvas.size,
+        (0, 0, 0, 0),
+    )
+
+    overlay_draw = ImageDraw.Draw(overlay)
+
+    x = box["x"]
+    y = box["y"]
+    width = box["width"]
+    height = box["height"]
+
+    overlay_draw.rounded_rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height,
+        ),
+        radius=BOX_CORNER_RADIUS,
+        fill=(255, 255, 255, WHITE_BOX_ALPHA),
+    )
+
+    canvas.alpha_composite(overlay)
 
 
 def draw_auto_fit_text(
@@ -218,21 +249,28 @@ def main():
         (19, 19),
     )
 
-    draw = ImageDraw.Draw(canvas)
-
     # Template 5 color
     TEXT_COLOR = "#3c3d72"
 
     # 3. Fixed subtitle: المجلس
+    council_box = {
+        "x": 1657,
+        "y": 761,
+        "width": 219,
+        "height": 206,
+    }
+
+    draw_transparent_box(
+        canvas,
+        council_box,
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         "المجلس",
-        {
-            "x": 1657,
-            "y": 761,
-            "width": 219,
-            "height": 206,
-        },
+        council_box,
         max_font_size=37,
         min_font_size=15,
         bold=True,
@@ -249,15 +287,24 @@ def main():
         )
     )
 
+    episode_box = {
+        "x": 1695,
+        "y": 967,
+        "width": 142,
+        "height": 93,
+    }
+
+    draw_transparent_box(
+        canvas,
+        episode_box,
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         episode,
-        {
-            "x": 1695,
-            "y": 967,
-            "width": 142,
-            "height": 93,
-        },
+        episode_box,
         max_font_size=50,
         min_font_size=15,
         bold=True,
@@ -274,15 +321,24 @@ def main():
         )
     )
 
+    title_box = {
+        "x": 473,
+        "y": 626,
+        "width": 974,
+        "height": 476,
+    }
+
+    draw_transparent_box(
+        canvas,
+        title_box,
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         title,
-        {
-            "x": 473,
-            "y": 626,
-            "width": 974,
-            "height": 476,
-        },
+        title_box,
         max_font_size=48,
         min_font_size=15,
         bold=True,
@@ -292,15 +348,24 @@ def main():
     )
 
     # 6. Fixed Telegram text
+    telegram_box = {
+        "x": 40,
+        "y": 910,
+        "width": 248,
+        "height": 57,
+    }
+
+    draw_transparent_box(
+        canvas,
+        telegram_box,
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         "Telegram",
-        {
-            "x": 40,
-            "y": 910,
-            "width": 248,
-            "height": 57,
-        },
+        telegram_box,
         max_font_size=45,
         min_font_size=15,
         bold=True,
@@ -317,15 +382,24 @@ def main():
         )
     )
 
+    channel_box = {
+        "x": 33,
+        "y": 1004,
+        "width": 375,
+        "height": 46,
+    }
+
+    draw_transparent_box(
+        canvas,
+        channel_box,
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         channel,
-        {
-            "x": 33,
-            "y": 1004,
-            "width": 375,
-            "height": 46,
-        },
+        channel_box,
         max_font_size=18,
         min_font_size=8,
         bold=False,
@@ -335,15 +409,24 @@ def main():
     )
 
     # 8. Fixed speaker name
+    speaker_box = {
+        "x": 384,
+        "y": 63,
+        "width": 1152,
+        "height": 63,
+    }
+
+    draw_transparent_box(
+        canvas,
+        speaker_box,
+    )
+
+    draw = ImageDraw.Draw(canvas)
+
     draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
-        {
-            "x": 384,
-            "y": 63,
-            "width": 1152,
-            "height": 63,
-        },
+        speaker_box,
         max_font_size=50,
         min_font_size=15,
         bold=True,

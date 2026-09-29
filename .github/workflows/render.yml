@@ -175,14 +175,7 @@ jobs:
                   timeout=120
               )
 
-          print("Cloudinary HTTP status:", response.status_code)
-
-          if response.status_code != 200:
-              print("Cloudinary response:")
-              print(response.text)
-              raise RuntimeError(
-                  f"Cloudinary upload failed with HTTP {response.status_code}"
-              )
+          response.raise_for_status()
 
           result = response.json()
 

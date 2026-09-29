@@ -230,6 +230,10 @@ def main():
         (19, 19)
     )
 
+    draw = ImageDraw.Draw(canvas)
+
+    TEXT_COLOR = "#270D30"
+
     # -------------------------------------------------
     # Title
     # -------------------------------------------------
@@ -255,8 +259,6 @@ def main():
 
     draw = ImageDraw.Draw(canvas)
 
-    TEXT_COLOR = "#270D30"
-
     draw_auto_fit_text(
         draw,
         title,
@@ -269,7 +271,7 @@ def main():
     )
 
     # -------------------------------------------------
-    # CTA
+    # CTA - Telegram
     # -------------------------------------------------
 
     cta_box = {
@@ -279,16 +281,12 @@ def main():
         "height": 64
     }
 
-    draw.rounded_rectangle(
-        (
-            cta_box["x"],
-            cta_box["y"],
-            cta_box["x"] + cta_box["width"],
-            cta_box["y"] + cta_box["height"]
-        ),
-        radius=0,
-        fill="#59A3FF"
+    draw_transparent_box(
+        canvas,
+        cta_box
     )
+
+    draw = ImageDraw.Draw(canvas)
 
     draw_auto_fit_text(
         draw,
@@ -302,7 +300,7 @@ def main():
     )
 
     # -------------------------------------------------
-    # Subtitle
+    # المجلس
     # -------------------------------------------------
 
     subtitle_box = {
@@ -323,11 +321,12 @@ def main():
         draw,
         "المجلس",
         subtitle_box,
-        7,
+        50,
         TEXT_COLOR,
         bold=False,
         align="right",
-        vertical="center"
+        vertical="center",
+        min_font_size=10
     )
 
     # -------------------------------------------------

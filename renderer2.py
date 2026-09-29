@@ -426,7 +426,7 @@ def main():
 
     draw_auto_fit_text(
         draw,
-        "Telegram",
+        "   Telegram",
         telegram_box,
         max_font_size=40,
         min_font_size=10,

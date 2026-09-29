@@ -87,14 +87,15 @@ jobs:
               "cloudinary_cloud_name": os.environ["CLOUDINARY_CLOUD_NAME"],
               "cloudinary_api_key": os.environ["CLOUDINARY_API_KEY"],
               "cloudinary_api_secret": os.environ["CLOUDINARY_API_SECRET"],
-              "renderer": os.environ["RENDERER"]
+              "renderer": os.environ["RENDERER"],
+              "include_logo": True
           }
 
           with open("input.json", "w", encoding="utf-8") as f:
               json.dump(data, f, ensure_ascii=False, indent=2)
           PY
 
-      - name: Render image
+      - name: Render image with logo
         env:
           RENDERER: ${{ inputs.renderer }}
         run: |
@@ -130,7 +131,61 @@ jobs:
               ;;
           esac
 
-      - name: Upload image to Cloudinary
+      - name: Save image with logo
+        run: |
+          cp output/output.png output/output_with_logo.png
+
+      - name: Render image without logo
+        env:
+          RENDERER: ${{ inputs.renderer }}
+        run: |
+          python - <<'PY'
+          import json
+
+          with open("input.json", "r", encoding="utf-8") as f:
+              data = json.load(f)
+
+          data["include_logo"] = False
+
+          with open("input_without_logo.json", "w", encoding="utf-8") as f:
+              json.dump(data, f, ensure_ascii=False, indent=2)
+          PY
+
+          case "$RENDERER" in
+            1)
+              python renderer1.py input_without_logo.json
+              ;;
+            2)
+              python renderer2.py input_without_logo.json
+              ;;
+            3)
+              python renderer3.py input_without_logo.json
+              ;;
+            4)
+              python renderer4.py input_without_logo.json
+              ;;
+            5)
+              python renderer5.py input_without_logo.json
+              ;;
+            6)
+              python renderer6.py input_without_logo.json
+              ;;
+            7)
+              python renderer7.py input_without_logo.json
+              ;;
+            8)
+              python renderer8.py input_without_logo.json
+              ;;
+            *)
+              echo "Invalid renderer: $RENDERER"
+              exit 1
+              ;;
+          esac
+
+          cp output/output.png output/output_without_logo.png
+          cp output/output_with_logo.png output/output.png
+
+      - name: Upload images to Cloudinary
         env:
           CLOUDINARY_CLOUD_NAME: ${{ inputs.cloudinary_cloud_name }}
           CLOUDINARY_API_KEY: ${{ inputs.cloudinary_api_key }}
@@ -146,50 +201,71 @@ jobs:
           api_key = os.environ["CLOUDINARY_API_KEY"]
           api_secret = os.environ["CLOUDINARY_API_SECRET"]
 
-          timestamp = int(time.time())
+          def upload_image(file_path):
+              timestamp = int(time.time())
 
-          signature_string = (
-              f"timestamp={timestamp}{api_secret}"
-          )
-
-          signature = hashlib.sha1(
-              signature_string.encode("utf-8")
-          ).hexdigest()
-
-          url = (
-              f"https://api.cloudinary.com/v1_1/"
-              f"{cloud_name}/image/upload"
-          )
-
-          with open("output/output.png", "rb") as image_file:
-              response = requests.post(
-                  url,
-                  files={
-                      "file": image_file
-                  },
-                  data={
-                      "api_key": api_key,
-                      "timestamp": timestamp,
-                      "signature": signature
-                  },
-                  timeout=120
+              signature_string = (
+                  f"timestamp={timestamp}{api_secret}"
               )
 
-          response.raise_for_status()
+              signature = hashlib.sha1(
+                  signature_string.encode("utf-8")
+              ).hexdigest()
 
-          result = response.json()
+              url = (
+                  f"https://api.cloudinary.com/v1_1/"
+                  f"{cloud_name}/image/upload"
+              )
 
-          secure_url = result["secure_url"]
+              with open(file_path, "rb") as image_file:
+                  response = requests.post(
+                      url,
+                      files={
+                          "file": image_file
+                      },
+                      data={
+                          "api_key": api_key,
+                          "timestamp": timestamp,
+                          "signature": signature
+                      },
+                      timeout=120
+                  )
+
+              response.raise_for_status()
+
+              result = response.json()
+
+              return result["secure_url"]
+
+          secure_url_with_logo = upload_image(
+              "output/output_with_logo.png"
+          )
+
+          secure_url_without_logo = upload_image(
+              "output/output_without_logo.png"
+          )
 
           print("Cloudinary upload successful")
-          print("Image URL:")
-          print(secure_url)
+          print("With logo:")
+          print(secure_url_with_logo)
+          print("Without logo:")
+          print(secure_url_without_logo)
 
-          with open("cloudinary_url.txt", "w", encoding="utf-8") as f:
-              f.write(secure_url)
+          with open("cloudinary_urls.json", "w", encoding="utf-8") as f:
+              import json
+
+              json.dump(
+                  {
+                      "secure_url_with_logo": secure_url_with_logo,
+                      "secure_url_without_logo": secure_url_without_logo
+                  },
+                  f,
+                  ensure_ascii=False,
+                  indent=2
+              )
           PY
 
-      - name: Send secure_url to n8n
+      - name: Send URLs to n8n
         env:
           WEBHOOK_URL: ${{ inputs.webhook_url }}
         run: |
@@ -200,26 +276,26 @@ jobs:
 
           webhook_url = os.environ["WEBHOOK_URL"]
 
-          with open("cloudinary_url.txt", "r", encoding="utf-8") as f:
-              secure_url = f.read().strip()
+          with open(
+              "cloudinary_urls.json",
+              "r",
+              encoding="utf-8"
+          ) as f:
+              urls = json.load(f)
 
           response = requests.post(
               webhook_url,
-              json={
-                  "secure_url": secure_url
-              },
+              json=urls,
               timeout=30
           )
 
           response.raise_for_status()
 
-          print("secure_url sent to n8n successfully")
+          print("Both image URLs sent to n8n successfully")
 
           print(
               json.dumps(
-                  {
-                      "secure_url": secure_url
-                  },
+                  urls,
                   ensure_ascii=False
               )
           )

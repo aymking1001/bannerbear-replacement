@@ -228,25 +228,35 @@ def main():
         (19, 19)
     )
 
-    # Telegram :
-    telegram_box = {
-        "x": 52,
-        "y": 962,
-        "width": 211,
-        "height": 77
+    # =========================================================
+    # Bottom shared box
+    # Telegram + Channel + المجلس + Episode + Speaker
+    # =========================================================
+
+    bottom_box = {
+        "x": 33,
+        "y": 910,
+        "width": 1795,
+        "height": 150
     }
 
     draw_transparent_box(
         canvas,
-        telegram_box
+        bottom_box
     )
 
     draw = ImageDraw.Draw(canvas)
 
+    # Telegram :
     draw_auto_fit_text(
         draw,
         "Telegram :",
-        telegram_box,
+        {
+            "x": 52,
+            "y": 925,
+            "width": 211,
+            "height": 55
+        },
         max_font_size=50,
         min_font_size=15,
         bold=True,
@@ -263,60 +273,42 @@ def main():
         )
     )
 
-    channel_box = {
-        "x": 263,
-        "y": 978,
-        "width": 516,
-        "height": 45
-    }
-
-    draw_transparent_box(
-        canvas,
-        channel_box
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
     draw_auto_fit_text(
         draw,
         channel,
-        channel_box,
+        {
+            "x": 263,
+            "y": 925,
+            "width": 516,
+            "height": 55
+        },
         max_font_size=40,
         min_font_size=10,
         bold=True,
         fill="#000000",
         align="left",
-        vertical="top"
+        vertical="center"
     )
 
-    # المجلس
-    council_box = {
-        "x": 1658,
-        "y": 975,
-        "width": 170,
-        "height": 50
-    }
-
-    draw_transparent_box(
-        canvas,
-        council_box
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
+    # الشيخ عبد الكريم الكثيري حفظه الله
     draw_auto_fit_text(
         draw,
-        "المجلس",
-        council_box,
-        max_font_size=50,
+        "الشيخ عبد الكريم الكثيري حفظه الله",
+        {
+            "x": 779,
+            "y": 925,
+            "width": 776,
+            "height": 55
+        },
+        max_font_size=40,
         min_font_size=15,
         bold=True,
-        fill="#303030",
-        align="right",
-        vertical="top"
+        fill="#000000",
+        align="center",
+        vertical="center"
     )
 
-    # Episode
+    # رقم المجلس
     episode = str(
         data.get(
             "episode",
@@ -324,28 +316,37 @@ def main():
         )
     )
 
-    episode_box = {
-        "x": 1544,
-        "y": 970,
-        "width": 114,
-        "height": 61
-    }
-
-    draw_transparent_box(
-        canvas,
-        episode_box
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
     draw_auto_fit_text(
         draw,
         episode,
-        episode_box,
+        {
+            "x": 1544,
+            "y": 925,
+            "width": 114,
+            "height": 55
+        },
         max_font_size=50,
         min_font_size=15,
         bold=True,
         fill="#262626",
+        align="right",
+        vertical="center"
+    )
+
+    # المجلس
+    draw_auto_fit_text(
+        draw,
+        "المجلس",
+        {
+            "x": 1658,
+            "y": 925,
+            "width": 170,
+            "height": 55
+        },
+        max_font_size=50,
+        min_font_size=15,
+        bold=True,
+        fill="#303030",
         align="right",
         vertical="center"
     )
@@ -382,33 +383,6 @@ def main():
         fill="#282828",
         align="center",
         vertical="center"
-    )
-
-    # الشيخ عبد الكريم الكثيري حفظه الله
-    speaker_box = {
-        "x": 779,
-        "y": 965,
-        "width": 776,
-        "height": 71
-    }
-
-    draw_transparent_box(
-        canvas,
-        speaker_box
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
-    draw_auto_fit_text(
-        draw,
-        "الشيخ عبد الكريم الكثيري حفظه الله",
-        speaker_box,
-        max_font_size=40,
-        min_font_size=15,
-        bold=True,
-        fill="#000000",
-        align="center",
-        vertical="top"
     )
 
     # Save

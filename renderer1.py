@@ -48,20 +48,40 @@ def fit_background(image):
     )
 
 
-def draw_transparent_box(draw, box):
+def draw_transparent_box(canvas, box):
     x = box["x"]
     y = box["y"]
     width = box["width"]
     height = box["height"]
 
-    draw.rectangle(
+    overlay = Image.new(
+        "RGBA",
+        canvas.size,
+        (0, 0, 0, 0)
+    )
+
+    overlay_draw = ImageDraw.Draw(
+        overlay,
+        "RGBA"
+    )
+
+    overlay_draw.rectangle(
         (
             x,
             y,
             x + width,
             y + height
         ),
-        fill=(255, 255, 255, WHITE_BOX_ALPHA)
+        fill=(
+            255,
+            255,
+            255,
+            WHITE_BOX_ALPHA
+        )
+    )
+
+    canvas.alpha_composite(
+        overlay
     )
 
 
@@ -278,7 +298,7 @@ def main():
     }
 
     draw_transparent_box(
-        draw,
+        canvas,
         council_box
     )
 
@@ -306,7 +326,7 @@ def main():
     }
 
     draw_transparent_box(
-        draw,
+        canvas,
         telegram_box
     )
 
@@ -341,7 +361,7 @@ def main():
     }
 
     draw_transparent_box(
-        draw,
+        canvas,
         episode_box
     )
 
@@ -376,7 +396,7 @@ def main():
     }
 
     draw_transparent_box(
-        draw,
+        canvas,
         title_box
     )
 
@@ -411,7 +431,7 @@ def main():
     }
 
     draw_transparent_box(
-        draw,
+        canvas,
         channel_box
     )
 
@@ -439,7 +459,7 @@ def main():
     }
 
     draw_transparent_box(
-        draw,
+        canvas,
         sheikh_box
     )
 

@@ -252,34 +252,42 @@ def main():
     # Template 5 color
     TEXT_COLOR = "#3c3d72"
 
-    # 3. Fixed subtitle: المجلس
-    council_box = {
+    # 3. المجلس + رقم المجلس
+    # Both texts are inside ONE shared box,
+    # but each has its own separate text area.
+    council_episode_box = {
         "x": 1657,
         "y": 910,
         "width": 219,
-        "height": 206,
+        "height": 150,
     }
 
     draw_transparent_box(
         canvas,
-        council_box,
+        council_episode_box,
     )
 
     draw = ImageDraw.Draw(canvas)
 
+    # المجلس
     draw_auto_fit_text(
         draw,
         "المجلس",
-        council_box,
+        {
+            "x": 1657,
+            "y": 910,
+            "width": 219,
+            "height": 75,
+        },
         max_font_size=37,
         min_font_size=15,
         bold=True,
         fill=TEXT_COLOR,
-        align="left",
+        align="center",
         vertical="center",
     )
 
-    # 4. Episode
+    # رقم المجلس
     episode = str(
         data.get(
             "episode",
@@ -287,24 +295,15 @@ def main():
         )
     )
 
-    episode_box = {
-        "x": 1695,
-        "y": 967,
-        "width": 142,
-        "height": 93,
-    }
-
-    draw_transparent_box(
-        canvas,
-        episode_box,
-    )
-
-    draw = ImageDraw.Draw(canvas)
-
     draw_auto_fit_text(
         draw,
         episode,
-        episode_box,
+        {
+            "x": 1657,
+            "y": 985,
+            "width": 219,
+            "height": 75,
+        },
         max_font_size=50,
         min_font_size=15,
         bold=True,
@@ -313,7 +312,7 @@ def main():
         vertical="center",
     )
 
-    # 5. Title
+    # 4. Title
     title = str(
         data.get(
             "title",
@@ -347,7 +346,7 @@ def main():
         vertical="center",
     )
 
-    # 6. Fixed Telegram text
+    # 5. Fixed Telegram text
     telegram_box = {
         "x": 40,
         "y": 910,
@@ -374,7 +373,7 @@ def main():
         vertical="center",
     )
 
-    # 7. Channel
+    # 6. Channel
     channel = str(
         data.get(
             "channel",
@@ -408,7 +407,7 @@ def main():
         vertical="center",
     )
 
-    # 8. Fixed speaker name
+    # 7. Fixed speaker name
     speaker_box = {
         "x": 384,
         "y": 63,
@@ -435,7 +434,7 @@ def main():
         vertical="center",
     )
 
-    # 9. Save
+    # 8. Save
     output_file = output_dir / "output.png"
 
     canvas.convert("RGB").save(

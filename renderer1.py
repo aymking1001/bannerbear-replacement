@@ -282,7 +282,7 @@ def main():
     canvas.alpha_composite(
         logo,
         (19, 19)
-    )
+        )
     
     draw = ImageDraw.Draw(
         canvas,

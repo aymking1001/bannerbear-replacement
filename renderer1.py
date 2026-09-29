@@ -11,7 +11,8 @@ HEIGHT = 1080
 FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-WHITE_BOX_ALPHA = 128
+WHITE_BOX_ALPHA = 110
+BOX_CORNER_RADIUS = 25
 
 
 def load_font(size, bold=False):
@@ -65,13 +66,14 @@ def draw_transparent_box(canvas, box):
         "RGBA"
     )
 
-    overlay_draw.rectangle(
+    overlay_draw.rounded_rectangle(
         (
             x,
             y,
             x + width,
             y + height
         ),
+        radius=BOX_CORNER_RADIUS,
         fill=(
             255,
             255,

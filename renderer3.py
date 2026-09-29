@@ -11,6 +11,9 @@ HEIGHT = 1080
 FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
 FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
+WHITE_BOX_ALPHA = 110
+BOX_CORNER_RADIUS = 25
+
 
 def load_font(size, bold=False):
     font_path = FONT_BOLD if bold else FONT_REGULAR
@@ -43,6 +46,44 @@ def fit_background(image):
 
     return image.crop(
         (left, top, left + WIDTH, top + HEIGHT)
+    )
+
+
+def draw_transparent_box(canvas, box):
+    x = box["x"]
+    y = box["y"]
+    width = box["width"]
+    height = box["height"]
+
+    overlay = Image.new(
+        "RGBA",
+        canvas.size,
+        (0, 0, 0, 0)
+    )
+
+    overlay_draw = ImageDraw.Draw(
+        overlay,
+        "RGBA"
+    )
+
+    overlay_draw.rounded_rectangle(
+        (
+            x,
+            y,
+            x + width,
+            y + height
+        ),
+        radius=BOX_CORNER_RADIUS,
+        fill=(
+            255,
+            255,
+            255,
+            WHITE_BOX_ALPHA
+        )
+    )
+
+    canvas.alpha_composite(
+        overlay
     )
 
 
@@ -199,7 +240,10 @@ def main():
         (19, 19)
     )
 
-    draw = ImageDraw.Draw(canvas)
+    draw = ImageDraw.Draw(
+        canvas,
+        "RGBA"
+    )
 
     TEXT_COLOR = "#0e2335"
 
@@ -219,15 +263,22 @@ def main():
         )
     )
 
+    title_box = {
+        "x": 377,
+        "y": 55,
+        "width": 1166,
+        "height": 364
+    }
+
+    draw_transparent_box(
+        canvas,
+        title_box
+    )
+
     draw_auto_fit_text(
         draw,
         title,
-        {
-            "x": 377,
-            "y": 55,
-            "width": 1166,
-            "height": 364
-        },
+        title_box,
         max_font_size=50,
         min_font_size=15,
         bold=False,
@@ -245,15 +296,22 @@ def main():
     # left / center
     # -------------------------------------------------
 
+    telegram_box = {
+        "x": 169,
+        "y": 883,
+        "width": 150,
+        "height": 40
+    }
+
+    draw_transparent_box(
+        canvas,
+        telegram_box
+    )
+
     draw_auto_fit_text(
         draw,
         "Telegram",
-        {
-            "x": 169,
-            "y": 883,
-            "width": 150,
-            "height": 40
-        },
+        telegram_box,
         max_font_size=50,
         min_font_size=10,
         bold=False,
@@ -278,15 +336,22 @@ def main():
         )
     )
 
+    channel_box = {
+        "x": 169,
+        "y": 990,
+        "width": 337,
+        "height": 44
+    }
+
+    draw_transparent_box(
+        canvas,
+        channel_box
+    )
+
     draw_auto_fit_text(
         draw,
         channel,
-        {
-            "x": 169,
-            "y": 990,
-            "width": 337,
-            "height": 44
-        },
+        channel_box,
         max_font_size=50,
         min_font_size=10,
         bold=True,
@@ -311,15 +376,22 @@ def main():
         )
     )
 
+    episode_box = {
+        "x": 1543,
+        "y": 992,
+        "width": 208,
+        "height": 40
+    }
+
+    draw_transparent_box(
+        canvas,
+        episode_box
+    )
+
     draw_auto_fit_text(
         draw,
         episode,
-        {
-            "x": 1543,
-            "y": 992,
-            "width": 208,
-            "height": 40
-        },
+        episode_box,
         max_font_size=50,
         min_font_size=10,
         bold=True,
@@ -337,15 +409,22 @@ def main():
     # center / center
     # -------------------------------------------------
 
+    council_box = {
+        "x": 1543,
+        "y": 863,
+        "width": 223,
+        "height": 79
+    }
+
+    draw_transparent_box(
+        canvas,
+        council_box
+    )
+
     draw_auto_fit_text(
         draw,
         "المجلس",
-        {
-            "x": 1543,
-            "y": 863,
-            "width": 223,
-            "height": 79
-        },
+        council_box,
         max_font_size=50,
         min_font_size=10,
         bold=False,
@@ -363,15 +442,22 @@ def main():
     # center / bottom
     # -------------------------------------------------
 
+    sheikh_box = {
+        "x": 677,
+        "y": 922,
+        "width": 668,
+        "height": 51
+    }
+
+    draw_transparent_box(
+        canvas,
+        sheikh_box
+    )
+
     draw_auto_fit_text(
         draw,
         "الشيخ عبد الكريم الكثيري حفظه الله",
-        {
-            "x": 677,
-            "y": 922,
-            "width": 668,
-            "height": 51
-        },
+        sheikh_box,
         max_font_size=50,
         min_font_size=10,
         bold=True,

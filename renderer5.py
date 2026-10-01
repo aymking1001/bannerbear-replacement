@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+import PIL.ImageChops
 
 
 WIDTH = 1920
@@ -240,7 +241,16 @@ def main():
         fill=255,
     )
 
-    logo.putalpha(mask)
+    # Keep the original PNG transparency
+    original_alpha = logo.getchannel("A")
+
+    # Combine original transparency with circular mask
+    logo.putalpha(
+        PIL.ImageChops.multiply(
+            original_alpha,
+            mask,
+        )
+    )
 
     canvas = canvas.convert("RGBA")
 

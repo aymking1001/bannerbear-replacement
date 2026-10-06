@@ -5,6 +5,8 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 import PIL.ImageChops
 
+from style import STYLE
+
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -13,15 +15,12 @@ WHITE_BOX_ALPHA = 110
 BOX_CORNER_RADIUS = 25
 
 
-# Temporary fonts.
-# We will replace these later with the exact fonts.
-FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-
-
-def load_font(size, bold=False):
-    font_path = FONT_BOLD if bold else FONT_REGULAR
-    return ImageFont.truetype(font_path, size)
+def load_style_font(style_name, size):
+    style = STYLE[style_name]
+    return ImageFont.truetype(
+        str(style["font"]),
+        size
+    )
 
 
 def download_image(url, path):
@@ -93,8 +92,7 @@ def draw_auto_fit_text(
     box,
     max_font_size,
     min_font_size,
-    bold=False,
-    fill="#000000",
+    style_name,
     align="left",
     vertical="center",
     spacing=4,
@@ -104,12 +102,14 @@ def draw_auto_fit_text(
     width = box["width"]
     height = box["height"]
 
+    style = STYLE[style_name]
+
     font_size = max_font_size
 
     while font_size >= min_font_size:
-        font = load_font(
+        font = load_style_font(
+            style_name,
             font_size,
-            bold=bold,
         )
 
         bbox = draw.multiline_textbbox(
@@ -131,9 +131,9 @@ def draw_auto_fit_text(
 
         font_size -= 1
 
-    font = load_font(
+    font = load_style_font(
+        style_name,
         max(font_size, min_font_size),
-        bold=bold,
     )
 
     bbox = draw.multiline_textbbox(
@@ -174,7 +174,7 @@ def draw_auto_fit_text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill,
+        fill=style["color"],
         spacing=spacing,
         align=align,
     )
@@ -260,9 +260,6 @@ def main():
             (19, 19),
         )
 
-    # Template 5 color
-    TEXT_COLOR = "#3c3d72"
-
     # 3. المجلس + رقم المجلس
     # Both texts are inside ONE shared box,
     # but each has its own separate text area.
@@ -292,8 +289,7 @@ def main():
         },
         max_font_size=37,
         min_font_size=15,
-        bold=True,
-        fill=TEXT_COLOR,
+        style_name="council",
         align="center",
         vertical="center",
     )
@@ -317,8 +313,7 @@ def main():
         },
         max_font_size=50,
         min_font_size=15,
-        bold=True,
-        fill=TEXT_COLOR,
+        style_name="episode",
         align="center",
         vertical="center",
     )
@@ -351,8 +346,7 @@ def main():
         title_box,
         max_font_size=48,
         min_font_size=15,
-        bold=True,
-        fill=TEXT_COLOR,
+        style_name="title",
         align="center",
         vertical="center",
     )
@@ -378,8 +372,7 @@ def main():
         telegram_box,
         max_font_size=45,
         min_font_size=15,
-        bold=True,
-        fill=TEXT_COLOR,
+        style_name="telegram",
         align="left",
         vertical="center",
     )
@@ -412,8 +405,7 @@ def main():
         channel_box,
         max_font_size=18,
         min_font_size=8,
-        bold=False,
-        fill=TEXT_COLOR,
+        style_name="channel",
         align="left",
         vertical="center",
     )
@@ -439,8 +431,7 @@ def main():
         speaker_box,
         max_font_size=50,
         min_font_size=15,
-        bold=True,
-        fill="#000000",
+        style_name="sheikh",
         align="center",
         vertical="center",
     )

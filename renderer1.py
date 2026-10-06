@@ -13,7 +13,7 @@ WHITE_BOX_ALPHA = 110
 BOX_CORNER_RADIUS = 25
 
 def load_style_font(style_name, size):
-style = STYLE[style_name]
+    style = STYLE[style_name]
 
 return ImageFont.truetype(
     str(style["font"]),

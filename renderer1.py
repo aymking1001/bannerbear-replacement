@@ -15,26 +15,21 @@ BOX_CORNER_RADIUS = 25
 def load_style_font(style_name, size):
 style = STYLE[style_name]
 
-
 return ImageFont.truetype(
     str(style["font"]),
     size
 )
 
-
 def download_image(url, path):
 import urllib.request
-
 
 urllib.request.urlretrieve(
     url,
     path
 )
 
-
 def fit_background(image):
 image = image.convert("RGB")
-
 
 scale = max(
     WIDTH / image.width,
@@ -56,13 +51,11 @@ return image.crop(
     (left, top, left + WIDTH, top + HEIGHT)
 )
 
-
 def draw_transparent_box(canvas, box):
 x = box["x"]
 y = box["y"]
 width = box["width"]
 height = box["height"]
-
 
 overlay = Image.new(
     "RGBA",
@@ -95,7 +88,6 @@ canvas.alpha_composite(
     overlay
 )
 
-
 def draw_text_box(
 draw,
 text,
@@ -110,7 +102,6 @@ x = box["x"]
 y = box["y"]
 width = box["width"]
 height = box["height"]
-
 
 bbox = draw.multiline_textbbox(
     (0, 0),
@@ -159,7 +150,6 @@ draw.multiline_text(
     align=align
 )
 
-
 def draw_auto_fit_text(
 draw,
 text,
@@ -175,7 +165,6 @@ x = box["x"]
 y = box["y"]
 width = box["width"]
 height = box["height"]
-
 
 style = STYLE[style_name]
 
@@ -262,9 +251,7 @@ draw.multiline_text(
     align=align
 )
 
-
 def main():
-
 
 if len(sys.argv) != 2:
     print(
@@ -557,6 +544,5 @@ print(
     f"Image created: {output_file}"
 )
 
-
-if **name** == "**main**":
+if name == "main":
 main()

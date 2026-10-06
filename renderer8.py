@@ -4,6 +4,8 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 
+from style import STYLE
+
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -11,13 +13,13 @@ HEIGHT = 1080
 WHITE_BOX_ALPHA = 110
 BOX_CORNER_RADIUS = 25
 
-FONT_REGULAR = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
-FONT_BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
-
-def load_font(size, bold=False):
-    font_path = FONT_BOLD if bold else FONT_REGULAR
-    return ImageFont.truetype(font_path, size)
+def load_style_font(style_name, size):
+    style = STYLE[style_name]
+    return ImageFont.truetype(
+        str(style["font"]),
+        size
+    )
 
 
 def download_image(url, path):
@@ -82,8 +84,7 @@ def draw_auto_fit_text(
     text,
     box,
     max_font_size,
-    fill,
-    bold=False,
+    style_name,
     align="left",
     vertical="center",
     min_font_size=1
@@ -93,14 +94,16 @@ def draw_auto_fit_text(
     width = box["width"]
     height = box["height"]
 
+    style = STYLE[style_name]
+
     text = str(text)
 
     font_size = max_font_size
 
     while font_size >= min_font_size:
-        font = load_font(
-            font_size,
-            bold=bold
+        font = load_style_font(
+            style_name,
+            font_size
         )
 
         bbox = draw.multiline_textbbox(
@@ -122,9 +125,9 @@ def draw_auto_fit_text(
 
         font_size -= 1
 
-    font = load_font(
-        max(font_size, min_font_size),
-        bold=bold
+    font = load_style_font(
+        style_name,
+        max(font_size, min_font_size)
     )
 
     bbox = draw.multiline_textbbox(
@@ -164,7 +167,7 @@ def draw_auto_fit_text(
         (text_x, text_y),
         text,
         font=font,
-        fill=fill,
+        fill=style["color"],
         align=align,
         spacing=0
     )
@@ -263,8 +266,7 @@ def main():
         title,
         title_box,
         100,
-        "#000000",
-        bold=True,
+        "title",
         align="center",
         vertical="center"
     )
@@ -298,8 +300,7 @@ def main():
             "height": 55
         },
         30,
-        "#000000",
-        bold=False,
+        "telegram",
         align="center",
         vertical="center"
     )
@@ -322,8 +323,7 @@ def main():
             "height": 55
         },
         30,
-        "#000000",
-        bold=False,
+        "channel",
         align="center",
         vertical="center"
     )
@@ -351,8 +351,7 @@ def main():
         "المجلس",
         council_box,
         86,
-        "#000000",
-        bold=True,
+        "council",
         align="center",
         vertical="center"
     )
@@ -387,8 +386,7 @@ def main():
         episode,
         episode_box,
         88,
-        "#000000",
-        bold=True,
+        "episode",
         align="center",
         vertical="center"
     )
@@ -416,8 +414,7 @@ def main():
         "الشيخ عبد الكريم الكثيري حفظه الله",
         speaker_box,
         50,
-        "#000000",
-        bold=True,
+        "sheikh",
         align="center",
         vertical="center"
     )

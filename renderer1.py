@@ -21,7 +21,7 @@ return ImageFont.truetype(
 )
 
 def download_image(url, path):
-import urllib.request
+    import urllib.request
 
 urllib.request.urlretrieve(
     url,

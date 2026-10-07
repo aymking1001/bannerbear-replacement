@@ -48,18 +48,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
+      # --------------------------------------------------
+      # Checkout repository
+      # --------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # --------------------------------------------------
+      # Setup Python
+      # --------------------------------------------------
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
+      # --------------------------------------------------
+      # Install dependencies
+      # --------------------------------------------------
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
 
+      # --------------------------------------------------
+      # Create input.json
+      # --------------------------------------------------
       - name: Create input.json
         env:
           BACKGROUND: ${{ inputs.background }}
@@ -95,6 +108,9 @@ jobs:
               json.dump(data, f, ensure_ascii=False, indent=2)
           PY
 
+      # --------------------------------------------------
+      # Render image WITH logo
+      # --------------------------------------------------
       - name: Render image with logo
         env:
           RENDERER: ${{ inputs.renderer }}
@@ -131,10 +147,16 @@ jobs:
               ;;
           esac
 
+      # --------------------------------------------------
+      # Save image WITH logo
+      # --------------------------------------------------
       - name: Save image with logo
         run: |
           cp output/output.png output/output_with_logo.png
 
+      # --------------------------------------------------
+      # Render image WITHOUT logo
+      # --------------------------------------------------
       - name: Render image without logo
         env:
           RENDERER: ${{ inputs.renderer }}
@@ -185,6 +207,9 @@ jobs:
           cp output/output.png output/output_without_logo.png
           cp output/output_with_logo.png output/output.png
 
+      # --------------------------------------------------
+      # Upload images to Cloudinary
+      # --------------------------------------------------
       - name: Upload images to Cloudinary
         env:
           CLOUDINARY_CLOUD_NAME: ${{ inputs.cloudinary_cloud_name }}
@@ -193,6 +218,7 @@ jobs:
         run: |
           python - <<'PY'
           import hashlib
+          import json
           import os
           import time
           import requests
@@ -204,10 +230,7 @@ jobs:
           def upload_image(file_path):
               timestamp = int(time.time())
 
-              signature_string = (
-                  f"timestamp={timestamp}{api_secret}"
-              )
-
+              signature_string = f"timestamp={timestamp}{api_secret}"
               signature = hashlib.sha1(
                   signature_string.encode("utf-8")
               ).hexdigest()
@@ -220,9 +243,7 @@ jobs:
               with open(file_path, "rb") as image_file:
                   response = requests.post(
                       url,
-                      files={
-                          "file": image_file
-                      },
+                      files={"file": image_file},
                       data={
                           "api_key": api_key,
                           "timestamp": timestamp,
@@ -232,18 +253,11 @@ jobs:
                   )
 
               response.raise_for_status()
-
               result = response.json()
-
               return result["secure_url"]
 
-          secure_url_with_logo = upload_image(
-              "output/output_with_logo.png"
-          )
-
-          secure_url_without_logo = upload_image(
-              "output/output_without_logo.png"
-          )
+          secure_url_with_logo = upload_image("output/output_with_logo.png")
+          secure_url_without_logo = upload_image("output/output_without_logo.png")
 
           print("Cloudinary upload successful")
           print("With logo:")
@@ -252,8 +266,6 @@ jobs:
           print(secure_url_without_logo)
 
           with open("cloudinary_urls.json", "w", encoding="utf-8") as f:
-              import json
-
               json.dump(
                   {
                       "secure_url_with_logo": secure_url_with_logo,
@@ -265,6 +277,9 @@ jobs:
               )
           PY
 
+      # --------------------------------------------------
+      # Send URLs + input data to n8n
+      # --------------------------------------------------
       - name: Send URLs to n8n
         env:
           WEBHOOK_URL: ${{ inputs.webhook_url }}
@@ -276,27 +291,48 @@ jobs:
 
           webhook_url = os.environ["WEBHOOK_URL"]
 
-          with open(
-              "cloudinary_urls.json",
-              "r",
-              encoding="utf-8"
-          ) as f:
+          # قراءة روابط Cloudinary
+          with open("cloudinary_urls.json", "r", encoding="utf-8") as f:
               urls = json.load(f)
+
+          # قراءة بيانات الإدخال الأصلية
+          with open("input.json", "r", encoding="utf-8") as f:
+              input_data = json.load(f)
+
+          # البيانات التي سيتم إرسالها إلى n8n
+          data = {
+              "secure_url_with_logo": urls["secure_url_with_logo"],
+              "secure_url_without_logo": urls["secure_url_without_logo"],
+
+              "background": input_data["background"],
+              "logo": input_data["logo"],
+              "title": input_data["title"],
+              "episode": input_data["episode"],
+              "channel": input_data["channel"],
+
+              "cloudinary_cloud_name": input_data["cloudinary_cloud_name"],
+              "cloudinary_api_key": input_data["cloudinary_api_key"],
+              "cloudinary_api_secret": input_data["cloudinary_api_secret"],
+
+              "webhook_url": input_data["webhook_url"],
+              "renderer": input_data["renderer"]
+          }
 
           response = requests.post(
               webhook_url,
-              json=urls,
+              json=data,
               timeout=30
           )
 
           response.raise_for_status()
 
-          print("Both image URLs sent to n8n successfully")
+          print("All data sent to n8n successfully")
 
           print(
               json.dumps(
-                  urls,
-                  ensure_ascii=False
+                  data,
+                  ensure_ascii=False,
+                  indent=2
               )
           )
           PY
